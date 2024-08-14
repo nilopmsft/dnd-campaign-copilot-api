@@ -1,0 +1,1 @@
+This is an openhack project where we are leveraging Azure OpenAI (LLM's) to help us generate a D&D Campaign and be our Dungeon Master Copilot! This is the API portion of the project that will manage the backend experience of doing AI Generation and just managing the campaign for players.
