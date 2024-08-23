@@ -9,40 +9,40 @@ using OpenAI.Chat;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CampaignCopilot
-{   
+{
 
-    public class Locale(ILogger<LocaleObject> logger, CosmosClient cosmosClient, AzureOpenAIClient openaiClient)
+    public class Location(ILogger<LocationObject> logger, CosmosClient cosmosClient, AzureOpenAIClient openaiClient)
     {
 
-        private readonly ILogger<LocaleObject> _logger = logger;
+        private readonly ILogger<LocationObject> _logger = logger;
         private readonly CosmosClient _cosmosClient = cosmosClient;
         private readonly AzureOpenAIClient _openaiClient = openaiClient;
-        string CosmosContainer = "Locales";
+        string CosmosContainer = "Locations";
 
-        [Function("Locale")]
-        public async Task<IActionResult> LocaleAsync([HttpTrigger(AuthorizationLevel.Function, ["get","post"])] HttpRequest req)
+        [Function("Location")]
+        public async Task<IActionResult> LocationAsync([HttpTrigger(AuthorizationLevel.Function, ["get", "post"])] HttpRequest req)
         {
 
             if (req.Method == "GET")
             {
-                if (string.IsNullOrEmpty(req.Query["localeId"].ToString()) || string.IsNullOrEmpty(req.Query["campaignId"].ToString()))
+                if (string.IsNullOrEmpty(req.Query["locationId"].ToString()) || string.IsNullOrEmpty(req.Query["campaignId"].ToString()))
                 {
-                    return new BadRequestObjectResult("Please provide a localeId and its campaignId");
+                    return new BadRequestObjectResult("Please provide a locationId and its campaignId");
                 }
                 else
                 {
-                    return await GetLocaleAsync(req);
+                    return await GetLocationAsync(req);
                 }
             }
             else if (req.Method == "POST")
             {
-                if (string.IsNullOrEmpty(req.Query["campaignId"].ToString()) || string.IsNullOrEmpty(req.Query["worldId"].ToString()))
+                if (string.IsNullOrEmpty(req.Query["campaignId"].ToString()) || string.IsNullOrEmpty(req.Query["localeId"].ToString()))
                 {
-                    return new BadRequestObjectResult("Please provide a campaignId and worldId to create a locale");
+                    return new BadRequestObjectResult("Please provide a campaignId and localeId to create a location");
                 }
                 else
                 {
-                    return await CreateLocaleAsync(req);
+                    return await CreateLocationAsync(req);
                 }
             }
             else
@@ -51,17 +51,17 @@ namespace CampaignCopilot
             }
         }
 
-        public async Task<IActionResult> GetLocaleAsync(HttpRequest req)
+        public async Task<IActionResult> GetLocationAsync(HttpRequest req)
         {
 
-            string localeId = req.Query["localeId"].ToString();
+            string locationId = req.Query["locationId"].ToString();
             string campaignId = req.Query["campaignId"].ToString();
 
             Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
             try
             {
 
-                ItemResponse<Object> response = await cosmosContainer.ReadItemAsync<Object>(localeId, new PartitionKey(campaignId));
+                ItemResponse<Object> response = await cosmosContainer.ReadItemAsync<Object>(locationId, new PartitionKey(campaignId));
 
                 LocaleObject locale = JsonSerializer.Deserialize<LocaleObject>(response.Resource.ToString());
                 return new OkObjectResult(locale);
@@ -69,38 +69,43 @@ namespace CampaignCopilot
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                _logger.LogInformation("Locale not found for id: {0}", localeId);
+                _logger.LogInformation("Location not found for id: {0}", locationId);
                 return new NotFoundResult();
             }
         }
 
-        public async Task<IActionResult> CreateLocaleAsync(HttpRequest req)
+        public async Task<IActionResult> CreateLocationAsync(HttpRequest req)
         {
 
             string campaignId = req.Query["campaignId"].ToString();
-            string worldId = req.Query["worldId"].ToString();
+            string localeId = req.Query["localeId"].ToString();
 
-            // Get existing world from cosmos to provide the description to the AI Prompt
-            WorldObject world;
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), "Worlds");
+            // Get existing Locale from cosmos to provide the description to the AI Prompt
+            LocaleObject locale;
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), "Locales");
             try
             {
-                ItemResponse<Object> worldResponse = await cosmosContainer.ReadItemAsync<Object>(worldId, new PartitionKey(campaignId));
-                world = JsonSerializer.Deserialize<WorldObject>(worldResponse.Resource.ToString());
+                ItemResponse<Object> localeResponse = await cosmosContainer.ReadItemAsync<Object>(localeId, new PartitionKey(campaignId));
+                locale = JsonSerializer.Deserialize<LocaleObject>(localeResponse.Resource.ToString());
 
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                return new NotFoundObjectResult("World not found for id: " + worldId);
+                return new NotFoundObjectResult("Locale not found for id: " + localeId);
             }
 
-            // Get Existing Locations for the World
+            AiModelPrompts aiModelPrompts = new AiModelPrompts("location");
+
+            //Append the Locale description to the user prompt to generate locations
+            aiModelPrompts.UserPrompt += "\nLocale Description:\n" + locale.description;
+
+            // Get Existing Locations for the Locale
             cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
-            QueryDefinition queryDefinition = new QueryDefinition("SELECT c.localeType FROM c WHERE c.campaignId = '" + campaignId + "' and c.worldId='" + worldId + "'");
+            QueryDefinition queryDefinition = new QueryDefinition("SELECT c.locationType FROM c WHERE c.campaignId = '" + campaignId + "' and c.localeId='" + localeId + "'");
             _logger.LogInformation("Query Definition: " + queryDefinition.QueryText);
             FeedIterator<Object> queryResultSetIterator = cosmosContainer.GetItemQueryIterator<Object>(queryDefinition);
-            List<string> existingLocales = new List<string>();
-            
+            List<string> existingLocations = new List<string>();
+
             while (queryResultSetIterator.HasMoreResults)
             {
                 FeedResponse<Object> currentResultSet = await queryResultSetIterator.ReadNextAsync();
@@ -109,8 +114,8 @@ namespace CampaignCopilot
 
                     try
                     {
-                        LocaleType localeType = JsonSerializer.Deserialize<LocaleType>(item.ToString());
-                        existingLocales.Add(localeType.localeType);
+                        LocationType locationType = JsonSerializer.Deserialize<LocationType>(item.ToString());
+                        existingLocations.Add(locationType.locationType);
                     }
                     catch (JsonException ex)
                     {
@@ -120,51 +125,46 @@ namespace CampaignCopilot
                 }
             }
 
-            AiModelPrompts aiModelPrompts = new AiModelPrompts("locale");
-
-            //Append the world description to the user prompt
-            aiModelPrompts.UserPrompt += "\nWorld Description:\n" + world.description;
-            
             //Append any existing locales if they exist
-            if (existingLocales.Count > 0)
+            if (existingLocations.Count > 0)
             {
-                aiModelPrompts.UserPrompt += "\n\nExisting Locales:\n";
-                foreach (string locale in existingLocales)
+                aiModelPrompts.UserPrompt += "\n\nExisting Locations:\n";
+                foreach (string location in existingLocations)
                 {
-                    aiModelPrompts.UserPrompt += locale + "\n";
+                    aiModelPrompts.UserPrompt += location + "\n";
                 }
             }
 
             _logger.LogInformation("User Prompt:\n" + aiModelPrompts.UserPrompt);
 
-            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment")); 
+            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"));
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
                 new UserChatMessage(aiModelPrompts.UserPrompt),
             ]);
 
-            LocaleCompletion localeCompletion;
+            LocationCompletion locationCompletion;
 
-            _logger.LogInformation("Locale Completion:\n" + completion.Content[0].Text);
+            _logger.LogInformation("Location Completion:\n" + completion.Content[0].Text);
 
             // Extract JSON content from the response
             string responseContent = completion.Content[0].Text;
             int startIndex = responseContent.IndexOf('{');
             int endIndex = responseContent.LastIndexOf('}');
-            
+
             if (startIndex != -1 && endIndex != -1 && endIndex > startIndex)
             {
                 string jsonResponse = responseContent.Substring(startIndex, endIndex - startIndex + 1);
-                              
+
                 try
                 {
-                    localeCompletion = JsonSerializer.Deserialize<LocaleCompletion>(jsonResponse);
+                    locationCompletion = JsonSerializer.Deserialize<LocationCompletion>(jsonResponse);
                 }
                 catch (JsonException ex)
                 {
                     _logger.LogError(ex, "Error deserializing JSON content");
-                    return new BadRequestObjectResult("Invalid Locale JSON format in response:" + jsonResponse);
+                    return new BadRequestObjectResult("Invalid Location JSON format in response:" + jsonResponse);
                 }
             }
             else
@@ -174,13 +174,13 @@ namespace CampaignCopilot
             }
 
             // Save the locale to CosmosDB
-            LocaleObject newLocale = new LocaleObject
+            LocationObject newLocation = new LocationObject
             {
                 id = Guid.NewGuid().ToString("N").Substring(0, 8),
-                name = localeCompletion.name,
-                description = localeCompletion.description,
-                localeType = localeCompletion.type,
-                worldId = worldId,
+                name = locationCompletion.name,
+                description = locationCompletion.description,
+                locationType = locationCompletion.type,
+                localeId = localeId,
                 campaignId = campaignId,
                 aimodelinfo = new AiModelInfo
                 {
@@ -191,16 +191,16 @@ namespace CampaignCopilot
             };
 
             cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
-            ItemResponse<LocaleObject> response = await cosmosContainer.CreateItemAsync(newLocale, new PartitionKey(campaignId));
-            
+            ItemResponse<LocationObject> response = await cosmosContainer.CreateItemAsync(newLocation, new PartitionKey(campaignId));
+
             return new OkObjectResult(response.Resource);
-   
+
         }
     }
-     
+
 }
 
-public class LocaleType
+public class LocationType
 {
-    public string localeType { get; set; }
+    public string locationType { get; set; }
 }

@@ -70,8 +70,10 @@ namespace CampaignCopilot
                 id = Guid.NewGuid().ToString("N").Substring(0, 8),
                 status = "creating",
                 create_date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                world = {},
-                locale = {},
+                worlds = {},
+                locales = {},
+                locations = {},
+                characters = {}
             };
 
             // Save the campaign to the Cosmos DB container
@@ -83,51 +85,4 @@ namespace CampaignCopilot
         }
 
     }
-}
-
-public class CampaignClass
-{
-    public string id { get; set; }
-    public string status { get; set; }
-    public string create_date { get; set; }
-    public string name { get; set; }
-    public string plot { get; set; }
-    public World world { get; set; }
-    public Locale locale { get; set; }
-    public List<Location> locations { get; set; }
-    public List<Character> characters { get; set; }
-
-    public CampaignClass()
-    {
-        // Initialize lists to avoid null reference issues
-        locations = new List<Location>();
-        characters = new List<Character>();
-    }
-}
-
-public class World
-{
-    public string world_name { get; set; }
-    public string world_image_url { get; set; }
-}
-
-public class Locale
-{
-    public string locale_name { get; set; }
-    public string locale_image_url { get; set; }
-}
-
-public class Location
-{
-    public string location_id { get; set; }
-    public string location_name { get; set; }
-    public string location_image_url { get; set; }
-}
-
-public class Character
-{
-    public string character_id { get; set; }
-    public string character_name { get; set; }
-    public string character_class { get; set; }
-    public string character_image_url { get; set; }
 }

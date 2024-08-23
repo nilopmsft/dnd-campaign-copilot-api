@@ -6,6 +6,7 @@ using Microsoft.Azure.Cosmos;
 using System.Text.Json;
 using Azure.AI.OpenAI;
 using OpenAI.Chat;
+using Microsoft.Extensions.Options;
 
 namespace CampaignCopilot
 {   
@@ -24,12 +25,27 @@ namespace CampaignCopilot
 
             if (req.Method == "GET")
             {
-                return await GetWorldAsync(req);
+
+                if (string.IsNullOrEmpty(req.Query["campaignId"].ToString()) || string.IsNullOrEmpty(req.Query["worldId"].ToString()))
+                {
+                    return new BadRequestObjectResult("Please provide a worldId and its campaignId");
+                }
+                else
+                {
+                    return await GetWorldAsync(req);
+                }
             }
             else if (req.Method == "POST")
             {
-                return await CreateWorldAsync(req);
-                // return new BadRequestObjectResult("POST method not implemented yet");
+
+                if (string.IsNullOrEmpty(req.Query["campaignId"].ToString()))
+                {
+                    return new BadRequestObjectResult("Please provide a campaignId to create a world");
+                } 
+                else 
+                {
+                    return await CreateWorldAsync(req);
+                }
             }
             else
             {
@@ -40,32 +56,24 @@ namespace CampaignCopilot
         public async Task<IActionResult> GetWorldAsync(HttpRequest req)
         {
 
-            string worldId = req.Query["id"].ToString();
+            string worldId = req.Query["worldId"].ToString();
+            string campaignId = req.Query["campaignId"].ToString();
 
-            if (worldId == null)
-            {
-                return new BadRequestObjectResult("Please provide an ID for the World");
-            }
-            else
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
+            try
             {
 
-                Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
-                try
-                {
+                ItemResponse<Object> response = await cosmosContainer.ReadItemAsync<Object>(worldId, new PartitionKey(campaignId));
 
-                    ItemResponse<Object> response = await cosmosContainer.ReadItemAsync<Object>(worldId, new PartitionKey(worldId));
+                WorldObject world = JsonSerializer.Deserialize<WorldObject>(response.Resource.ToString());
+                return new OkObjectResult(world);
 
-                    WorldObject world = JsonSerializer.Deserialize<WorldObject>(response.Resource.ToString());
-                    return new OkObjectResult(world);
-
-                }
-                catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    _logger.LogInformation("World not found for id: {0}", worldId);
-                    return new NotFoundResult();
-                }
             }
-
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                _logger.LogInformation("World not found for id: {0}", worldId);
+                return new NotFoundResult();
+            }
         }
 
         public async Task<IActionResult> CreateWorldAsync(HttpRequest req)
@@ -73,14 +81,9 @@ namespace CampaignCopilot
 
             string campaignId = req.Query["campaignId"].ToString();
 
-            if (string.IsNullOrEmpty(campaignId))
-            {
-                campaignId = "0";
-            }
-
             AiModelPrompts aiModelPrompts = new AiModelPrompts("world");
 
-            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment")); 
+            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"));
 
             ChatCompletion completion = chatClient.CompleteChat(
             [
@@ -94,11 +97,11 @@ namespace CampaignCopilot
             string responseContent = completion.Content[0].Text;
             int startIndex = responseContent.IndexOf('{');
             int endIndex = responseContent.LastIndexOf('}');
-            
+
             if (startIndex != -1 && endIndex != -1 && endIndex > startIndex)
             {
                 string jsonResponse = responseContent.Substring(startIndex, endIndex - startIndex + 1);
-                              
+
                 try
                 {
                     worldCompletion = JsonSerializer.Deserialize<WorldCompletion>(jsonResponse);
@@ -131,10 +134,10 @@ namespace CampaignCopilot
             };
 
             Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
-            ItemResponse<WorldObject> response = await cosmosContainer.CreateItemAsync(newWorld, new PartitionKey(newWorld.id));
-            
+            ItemResponse<WorldObject> response = await cosmosContainer.CreateItemAsync(newWorld, new PartitionKey(newWorld.campaignId));
+
             return new OkObjectResult(response.Resource);
-   
+
         }
     }
      
