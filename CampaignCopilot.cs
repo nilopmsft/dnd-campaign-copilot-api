@@ -136,4 +136,5 @@ namespace CampaignCopilot
         public AiModelInfo aimodelinfo { get; set; }
         public AiModelPrompts aimodelprompts { get; set; }
     }
+
 }
