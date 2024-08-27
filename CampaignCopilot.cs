@@ -110,7 +110,7 @@ namespace CampaignCopilot
         public string name { get; set; }
         public string description { get; set; }
         public string localeType { get; set; }
-        public string imageURL { get; set; }
+        public string imageUrl { get; set; }
         public string worldId { get; set; }
         public string campaignId { get; set; }
         public AiModelInfo aimodelinfo { get; set; }
@@ -130,7 +130,7 @@ namespace CampaignCopilot
         public string name { get; set; }
         public string description { get; set; }
         public string locationType { get; set; }
-        public string imageURL { get; set; }
+        public string imageUrl { get; set; }
         public string localeId { get; set; }
         public string campaignId { get; set; }
         public AiModelInfo aimodelinfo { get; set; }
