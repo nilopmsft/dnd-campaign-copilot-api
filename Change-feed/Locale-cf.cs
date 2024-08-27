@@ -41,6 +41,7 @@ namespace CampaignCopilot
                     {
                         id = localeObject.id,
                         name = localeObject.name,
+                        type = localeObject.localeType,
                         parentId = localeObject.worldId,
                         imageUrl = localeObject.imageUrl
                     };
@@ -67,6 +68,7 @@ public class LocaleReference
 {
     public string id { get; set; }
     public string name { get; set; }
+    public string type { get; set; }
     public string parentId { get; set; }
     public string imageUrl { get; set; }
 
