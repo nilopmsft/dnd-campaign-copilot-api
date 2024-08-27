@@ -41,7 +41,7 @@ namespace CampaignCopilot
                     {
                         id = localeObject.id,
                         name = localeObject.name,
-                        parentId = localeObject.campaignId,
+                        parentId = localeObject.worldId,
                         imageUrl = localeObject.imageUrl
                     };
 
