@@ -1,0 +1,18 @@
+{
+    "id": "7176897e",
+    "name": "Zephyrium Spire",
+    "description": "Zephyrium Spire is a towering, crystalline monolith rising from one of Aetheria's larger floating islands, known as Whispering Gale. This island is perpetually surrounded by swirling mists and powerful winds that create musical harmonies as they pass through the crystal structures. The Spire itself is said to have been a research tower for the Elari Empire, rumored to house lost knowledge and potent artifacts related to their cloudforged technologies and airship innovations. Nowadays, Zephyrium Spire is a beacon of curiosity and danger, attracting scholars, treasure hunters, and mercenaries alike, all eager to uncover its secrets. The Windward Traders Guild has an outpost on the island, using it as a waypoint for trade in rare goods, while the Skysteel Covenant maintains a small garrison to prevent any singular faction from gaining control of the ancient tower.",
+    "localeType": "Ancient Tower",
+    "imageUrl": null,
+    "worldId": "261989b8",
+    "campaignId": "cf0eed10",
+    "aimodelinfo": {
+        "ModelDeployment": "gpt-4o",
+        "ModelEndpoint": "https://example.openai.azure.com"
+    },
+    "aimodelprompts": {
+        "SystemPrompt": "You are a dungeon and dragons dungeon master you will be provided with the description of a world used in a dungeons and dragons campaign. You are tasked with creating a locale in the world that is provided. The locale could be anything that you feel creative about, examples could be a large capital city, major trade port, space station or sprawling ogre encampment, whatever makes creative sense for the world. I am really relying on you to be creative. Feel free to add a certain vibe or feel for this locale. Feel free to weave in how this locale is part of the world, maybe something exceptional about it or a completely unknown place. Your response will be in JSON and include the name of the locale as name, the description as description and give it a type as type to better understand what it is. Avoid special characters or formatting such as new lines.",
+        "UserPrompt": "Create a new locale\nWorld Description:\nAetheria is a world suspended in the vast, cerulean expanse of the Aether. Floating islands, some as small as villages and others spanning entire continents, drift gently in this infinite sky. The ancient Elari Empire, masters of airship technology and cloudforged weaponry, once united the islands, before The Sundering of 1432 S.E. fractured their control. Now, factions like the Windward Traders Guild and the militant Skysteel Covenant vie for dominion over the skies. Legends speak of the Aether Heart, a mystical artifact believed to control the very currents of the sky, lost since The Sundering.\n\nExisting Locales:\nHidden Island\n",
+        "StructurePrompt": "{ \"name\": \"\", \"description\": \"\", \"type\": \"\" }"
+    }
+}

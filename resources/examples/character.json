@@ -1,0 +1,97 @@
+{
+    "id": "00cb5ba2",
+    "name": "Khalidra Stormclaw",
+    "backstory": "Raised in the heart of a storm-ravaged archipelago, Khalidra always had a fierce connection to the chaos of the weather. Trained by her tribe's shamans, she learned to harness the primal elements to defend her people. Her journey now leads her to explore lands beyond the sea, seeking to understand the ancient forces that shape her world.",
+    "imageUrl": null,
+    "campaignId": "cf0eed10",
+    "definition": {
+        "character_class": "sorcerer",
+        "level": "1",
+        "race": "tiefling",
+        "background": "acolyte",
+        "alignment": "chaotic good",
+        "age": "24",
+        "height": "67",
+        "weight": "145",
+        "hair": "dark red"
+    },
+    "stats": {
+        "strength": "10",
+        "dexterity": "14",
+        "constitution": "12",
+        "intelligence": "16",
+        "wisdom": "13",
+        "charisma": "18"
+    },
+    "saving_throws": {
+        "strength": "0",
+        "dexterity": "2",
+        "constitution": "1",
+        "intelligence": "3",
+        "wisdom": "1",
+        "charisma": "4"
+    },
+    "skills": {
+        "acrobatics": "2",
+        "animal_handling": "1",
+        "arcana": "3",
+        "athletics": "0",
+        "deception": "4",
+        "history": "3",
+        "insight": "1",
+        "intimidation": "4",
+        "investigation": "3",
+        "medicine": "1",
+        "nature": "3",
+        "perception": "1",
+        "performance": "4",
+        "persuasion": "4",
+        "religion": "3",
+        "sleight_of_hand": "2",
+        "stealth": "2",
+        "survival": "1"
+    },
+    "health": {
+        "armor_class": "12",
+        "initiative": "2",
+        "speed": "30",
+        "maximum_hit_points": "8",
+        "current_hit_points": "8",
+        "hit_dice": "1d6",
+        "death_saves": "0"
+    },
+    "attacks_and_spellcasting": [
+        {
+            "name": "Fire Bolt",
+            "attack_bonus": "5",
+            "damage_type": "fire"
+        },
+        {
+            "name": "Ray of Frost",
+            "attack_bonus": "5",
+            "damage_type": "cold"
+        }
+    ],
+    "personality": {
+        "personality_traits": "fierce",
+        "ideals": "freedom",
+        "bonds": "tribe",
+        "flaws": "reckless"
+    },
+    "features_and_traits": [
+        "darkvision",
+        "hellish resistance",
+        "infernal legacy",
+        "spellcasting",
+        "storm connection"
+    ],
+    "aimodelinfo": {
+        "ModelDeployment": "gpt-4o",
+        "ModelEndpoint": "https://example.openai.azure.com"
+    },
+    "aimodelprompts": {
+        "SystemPrompt": "You are a dungeon and dragons character creator assistant. You will create a a full character sheet based upon the common characteristics for your chosen race based on the 5th edition of Dungeons and Dragons. Provide an interesting name as 'name' and very short backstory for the character as backstory. After this you will have arrays of additional info. First array, 'definition', containing: character_class, level, race, background, alignment, age, height which is expressed in inches, weight and hair. Second Array 'Stats', containing: strength, dexterity, constitution, intelligence, wisdom and charisma. Array three 'saving_throws', containing: strength, dexterity, constitution, intelligence, wisdom and charisma. Array four 'skills', containing: acrobatics, animal_handling, arcana, athletics, deception, history, insight, intimidation, investigation, medicine, nature, perception, performance, persuasion, religion, sleight_of_hand, stealth and survival. Array five 'health', containing: armor_class, initiative, speed, maximum_hit_points, current_hit_points, hit_dice, death_saves. Array Six 'attacks_and_spellcasting', containing a list of name, attack_bonus, damage_type. Array Seven 'personality', containing: personality_traits, ideals, bonds and flaws which are one word. Array Eight 'features_and_traits', containing a list of features and traits, avoid property names. Be creative, be descriptive, be nerdy. Return only a json structure that has string values. Each section should be separate a property with nested json containing the properties named after each characteristic and their values. The output will be stored as json, remove any special characters that are not necessary and all properties will be lowercase. You will also be provided a list of character names, their class and race, avoid making similar characters.",
+        "UserPrompt": "Create a character\n\nExisting Characters:\nThalindra Moonshadow - druid - elf\nKaelith Emberforge - fighter - dwarf\nElara Swiftwind - rogue - halfling\n",
+        "StructurePrompt": "TBD"
+    }
+}

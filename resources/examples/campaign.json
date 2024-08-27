@@ -1,0 +1,101 @@
+{
+    "id": "cf0eed10",
+    "status": "creating",
+    "create_date": "2024-08-27T12:15:08Z",
+    "name": null,
+    "plot": null,
+    "worlds": [
+        {
+            "id": "261989b8",
+            "name": "Aetheria",
+            "parentId": "cf0eed10",
+            "imageUrl": null
+        }
+    ],
+    "locales": [
+        {
+            "id": "84f713b3",
+            "name": "Zephyra's Veil",
+            "parentId": "261989b8",
+            "imageUrl": null
+        },
+        {
+            "id": "7176897e",
+            "name": "Zephyrium Spire",
+            "parentId": "261989b8",
+            "imageUrl": null
+        }
+    ],
+    "locations": [
+        {
+            "id": "1c81b89f",
+            "name": "Cathedral of Whispering Mists",
+            "parentId": "84f713b3",
+            "imageUrl": null
+        },
+        {
+            "id": "fd60e990",
+            "name": "The Obsidian Loom",
+            "parentId": "84f713b3",
+            "imageUrl": null
+        },
+        {
+            "id": "46b463ed",
+            "name": "Harpistrum Gardens",
+            "parentId": "84f713b3",
+            "imageUrl": null
+        },
+        {
+            "id": "73f70164",
+            "name": "Zephyrium Spire",
+            "parentId": "7176897e",
+            "imageUrl": null
+        },
+        {
+            "id": "b35aaafd",
+            "name": "Zephyrium Spire",
+            "parentId": "7176897e",
+            "imageUrl": null
+        },
+        {
+            "id": "75996fc5",
+            "name": "Zephyrium Spire",
+            "parentId": "7176897e",
+            "imageUrl": null
+        }
+    ],
+    "characters": [
+        {
+            "id": "96c36796",
+            "name": "Thalindra Moonshadow",
+            "race": "elf",
+            "character_class": "druid",
+            "parentId": "cf0eed10",
+            "imageUrl": null
+        },
+        {
+            "id": "31328b6b",
+            "name": "Kaelith Emberforge",
+            "race": "dwarf",
+            "character_class": "fighter",
+            "parentId": "cf0eed10",
+            "imageUrl": null
+        },
+        {
+            "id": "82b17148",
+            "name": "Elara Swiftwind",
+            "race": "halfling",
+            "character_class": "rogue",
+            "parentId": "cf0eed10",
+            "imageUrl": null
+        },
+        {
+            "id": "00cb5ba2",
+            "name": "Khalidra Stormclaw",
+            "race": "tiefling",
+            "character_class": "sorcerer",
+            "parentId": "cf0eed10",
+            "imageUrl": null
+        }
+    ]
+}
