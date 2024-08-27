@@ -41,6 +41,7 @@ namespace CampaignCopilot
                     {
                         id = locationObject.id,
                         name = locationObject.name,
+                        type = locationObject.locationType,
                         parentId = locationObject.localeId,
                         imageUrl = locationObject.imageUrl
                     };
@@ -67,6 +68,7 @@ public class LocationReference
 {
     public string id { get; set; }
     public string name { get; set; }
+    public string type { get; set; }
     public string parentId { get; set; }
     public string imageUrl { get; set; }
 
