@@ -48,7 +48,7 @@ namespace CampaignCopilot
 
                     ItemResponse<Object> response = await cosmosContainer.ReadItemAsync<Object>(campaignId, new PartitionKey(campaignId));
 
-                    CampaignClass campaign = JsonSerializer.Deserialize<CampaignClass>(response.Resource.ToString());
+                    CampaignObject campaign = JsonSerializer.Deserialize<CampaignObject>(response.Resource.ToString());
                     return new OkObjectResult(campaign);
 
                 }
@@ -64,7 +64,7 @@ namespace CampaignCopilot
         public async Task<IActionResult> CreateCampaignAsync(HttpRequest req)
         {
 
-            CampaignClass newCampaign = new CampaignClass
+            CampaignObject newCampaign = new CampaignObject
             {
                 // Generate a unique ID for the campaign
                 id = Guid.NewGuid().ToString("N").Substring(0, 8),
@@ -78,7 +78,7 @@ namespace CampaignCopilot
 
             // Save the campaign to the Cosmos DB container
             Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), "Campaigns");
-            ItemResponse<CampaignClass> response = await cosmosContainer.CreateItemAsync(newCampaign, new PartitionKey(newCampaign.id));
+            ItemResponse<CampaignObject> response = await cosmosContainer.CreateItemAsync(newCampaign, new PartitionKey(newCampaign.id));
 
             return new OkObjectResult(response.Resource);
 

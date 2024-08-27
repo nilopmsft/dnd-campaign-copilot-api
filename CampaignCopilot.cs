@@ -3,7 +3,7 @@ using System.Text.Json;
 namespace CampaignCopilot
 {
 
-    public class CampaignClass
+    public class CampaignObject
     {
         public string id { get; set; }
         public string status { get; set; }
@@ -15,7 +15,7 @@ namespace CampaignCopilot
         public List<LocationList> locations { get; set; }
         public List<CharacterList> characters { get; set; }
 
-        public CampaignClass()
+        public CampaignObject()
         {
             // Initialize lists to avoid null reference issues
             worlds = new List<WorldList>();
