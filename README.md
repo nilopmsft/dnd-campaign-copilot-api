@@ -1,4 +1,4 @@
-## D&D CampAIgn Copilot
+# D&D CampAIgn Copilot
 
 This project is for an openhack to learn Azure Cosmos DB and Azure OpenAI services and configurations. We are using the various LLM capabilities in Azure OpenAI to help us create a campaign for Dungeons and Dragons with all details, images and storing them in Cosmos for retention. At the end it could assist a Dungeon Master to take a campaign to a group and begin their quest.
 
@@ -16,7 +16,7 @@ This repo holds all the API logic and changefeed processors for cosmos that are 
   - This is a location within a locale (think church, graveyard, tavern, cathedral, lagoon, etc). Typically a locale will have a few unique locations. This is a child of a locale.
 
 
-### Cosmos Configuration
+## Cosmos Configuration
 
 The project expects a single database, **dnd** with a collection for each object type and a Leases container for the Change Feed Processors:
 
@@ -30,7 +30,7 @@ The project expects a single database, **dnd** with a collection for each object
 We chose to use a shared provisioned resources due to traffice levels (i.e. RU's at the database level)
 
 
-### App Configuration
+## App Configuration
 
 For local (and cloud deployment), will want to ensure that these properties are provided in your local.settings.json in your project, or provided in an Azure Function App deployment.
 
@@ -49,6 +49,17 @@ For local (and cloud deployment), will want to ensure that these properties are 
 }
 ```
 
-### Note
+## API Calls
+
+Every object has a parent object, at the very least its the Campaign itself (unless it is the campaign being created). This can effect how you lookup or create an object. Each object requires the campaignId. This means:
+
+- To look up an object, you need the objectId and the campaignId. It is a GET request to `/api/<object>?'object'Id=<objectId>&camapaignId=<campaignId>`
+  - EXAMPLE OF Locale lookup: GET `/api/Locale?localeId=abc&campaignId=123`
+- To create an object, you need the parentId and the campaignId. For a world the Campaign is the parent. For a campaign there is no parent. It is a POST request to `/api/<object>?'parent'Id=<parentId>&camapaignId=<campaignId>` 
+  - EXAMPLE Of Locale creation: POST `/api/Locale?worldId=def&campaignId=123`
+
+The reason for the campaignID is that we need that to tie back to the campaign when updating the campaign sheet upon object creation as well as all collections are partitioned by campaignId so its easy to identify which objects exist for a campaign.
+
+## Note
 
 This is a fun project and understand that the accuracy and effectiveness of characters or locations are simply from the mind of the AI LLM. In no way are we suggesting the existing D&D resources are inferior and is simply for fun and learning. Who knows the results of building this could lead to an exciting adventure.
