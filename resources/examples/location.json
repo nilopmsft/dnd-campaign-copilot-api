@@ -1,0 +1,18 @@
+{
+    "id": "75996fc5",
+    "name": "Zephyrium Spire",
+    "description": "Zephyrium Spire is a towering, crystalline monolith that stands majestically upon Whispering Gale, one of Aetheria's larger floating islands. Surrounded by swirling mists and powerful winds that create hauntingly beautiful harmonies, the Spire pierces the sky with an arcane elegance. Once a research tower for the Elari Empire, it is rumored to hold lost knowledge and potent artifacts related to cloudforged technologies and airship innovations. Now, the Spire is a magnet for scholars, treasure hunters, and mercenaries, all eager to uncover its secrets. The Windward Traders Guild has an outpost here, serving as a waypoint for trade in rare goods, while the Skysteel Covenant maintains a small garrison to ensure no single faction seizes control of the ancient edifice. To gain entrance, one must navigate the musical puzzle created by the winds - a harmonious key that only the wise can decipher.",
+    "locationType": "Ancient Tower",
+    "imageUrl": null,
+    "localeId": "7176897e",
+    "campaignId": "cf0eed10",
+    "aimodelinfo": {
+        "ModelDeployment": "gpt-4o",
+        "ModelEndpoint": "https://example.openai.azure.com"
+    },
+    "aimodelprompts": {
+        "SystemPrompt": "You are a dungeon and dragons dungeon master you will be provided with a location. You will create a location at this locale. Provide as much detail to make the location of interest to the players. You might be provided other location types at this locale and ask you make something unique from that but makes sense for the locale description provided. If there is a puzzle or task to gain entrance to this location, make mention of it but dont reveal what it is, make it mysterious. Not every location is hard to access however. If there an entity, rumor of a unique item or NPC there, provide that but again not always. Be creative, be descriptive, be nerdy. Return only a json response that has string values. Remove any special characters that are not necessary. You will return the name of the location as name. The description of the location as description and the type of location as type.",
+        "UserPrompt": "Create a location\nLocale Description:\nZephyrium Spire is a towering, crystalline monolith rising from one of Aetheria's larger floating islands, known as Whispering Gale. This island is perpetually surrounded by swirling mists and powerful winds that create musical harmonies as they pass through the crystal structures. The Spire itself is said to have been a research tower for the Elari Empire, rumored to house lost knowledge and potent artifacts related to their cloudforged technologies and airship innovations. Nowadays, Zephyrium Spire is a beacon of curiosity and danger, attracting scholars, treasure hunters, and mercenaries alike, all eager to uncover its secrets. The Windward Traders Guild has an outpost on the island, using it as a waypoint for trade in rare goods, while the Skysteel Covenant maintains a small garrison to prevent any singular faction from gaining control of the ancient tower.\n\nExisting Locations:\nAncient Tower\nAncient Tower\n",
+        "StructurePrompt": "{ \"name\": \"\", \"description\": \"\", \"locationType\": \"\" }"
+    }
+}
