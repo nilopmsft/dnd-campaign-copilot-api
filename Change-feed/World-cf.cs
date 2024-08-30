@@ -61,13 +61,3 @@ namespace CampaignCopilot
     }
 
 }
-
-
-public class WorldReference
-{
-    public string id { get; set; }
-    public string name { get; set; }
-    public string parentId { get; set; }
-    public string imageUrl { get; set; }
-
-}

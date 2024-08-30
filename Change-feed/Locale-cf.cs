@@ -29,10 +29,10 @@ namespace CampaignCopilot
             {
 
                 _logger.LogInformation("Documents modified: " + input.Count);
-                
+
                 foreach (LocaleObject localeObject in input)
                 {
-      
+
                     _logger.LogInformation("Locale Id: " + localeObject.id);
                     _logger.LogInformation("Campaign_ID: " + localeObject.campaignId);
 
@@ -60,16 +60,5 @@ namespace CampaignCopilot
             }
         }
     }
-
-}
-
-
-public class LocaleReference
-{
-    public string id { get; set; }
-    public string name { get; set; }
-    public string type { get; set; }
-    public string parentId { get; set; }
-    public string imageUrl { get; set; }
 
 }

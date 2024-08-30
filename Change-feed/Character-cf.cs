@@ -63,15 +63,3 @@ namespace CampaignCopilot
     }
 
 }
-
-
-public class CharacterReference
-{
-    public string id { get; set; }
-    public string name { get; set; }
-    public string race { get; set; }
-    public string character_class { get; set; }
-    public string parentId { get; set; }
-    public string imageUrl { get; set; }
-
-}
