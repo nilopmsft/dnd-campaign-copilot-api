@@ -19,7 +19,14 @@ namespace CampaignCopilot
 
             if (req.Method == "GET")
             {
-                return await GetCampaignAsync(req);
+                if (string.IsNullOrEmpty(req.Query["campaignId"].ToString()))
+                {
+                    return new BadRequestObjectResult("Please provide a campaignId for the campaign");
+                }
+                else
+                {
+                    return await GetCampaignAsync(req);
+                }
             }
             else if (req.Method == "POST")
             {
@@ -33,14 +40,8 @@ namespace CampaignCopilot
         public async Task<IActionResult> GetCampaignAsync(HttpRequest req)
         {
 
-            string campaignId = req.Query["id"].ToString();
+            string campaignId = req.Query["campaignId"].ToString();
 
-            if (campaignId == null)
-            {
-                return new BadRequestObjectResult("Please provide an ID for the campaign");
-            }
-            else
-            {
 
                 Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), "Campaigns");
                 try
@@ -58,8 +59,6 @@ namespace CampaignCopilot
                     return new NotFoundResult();
                 }
             }
-
-        }
 
         public async Task<IActionResult> CreateCampaignAsync(HttpRequest req)
         {
