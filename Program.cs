@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.Cosmos;
 using Azure.AI.OpenAI;
+using Azure.Storage.Blobs;
 using Azure;
 
 
@@ -15,6 +16,10 @@ var host = new HostBuilder()
         {
             return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbEndpointUrl"),Environment.GetEnvironmentVariable("CosmosDbPrimaryKey"));
         });
+        services.AddSingleton<BlobServiceClient>(ServiceProviderserviceProvider =>
+        {
+            return new BlobServiceClient(Environment.GetEnvironmentVariable("BlobStorageConnectionString"));
+        } );
         services.AddSingleton<AzureOpenAIClient>(serviceProvider =>
         {
             var endpoint = new Uri(Environment.GetEnvironmentVariable("AzureAiCompletionEndpoint"));

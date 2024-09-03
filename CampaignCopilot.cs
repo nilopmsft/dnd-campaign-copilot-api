@@ -62,6 +62,8 @@ namespace CampaignCopilot
     {
         public string SystemPrompt { get; set; }
         public string UserPrompt { get; set; }
+        public string DallePrompt { get; set; }
+
         public string? StructurePrompt { get; set; }
         public AiModelPrompts() { }
 
@@ -77,6 +79,8 @@ namespace CampaignCopilot
             SystemPrompt = modelPrompts.SystemPrompt;
             UserPrompt = modelPrompts.UserPrompt;
             StructurePrompt = modelPrompts.StructurePrompt;
+            DallePrompt = modelPrompts.DallePrompt;
+
         }
     }
 
@@ -84,6 +88,7 @@ namespace CampaignCopilot
     {
         public string name { get; set; }
         public string description { get; set; }
+        public string dallePrompt { get; set; }
     }
 
     public class WorldObject
@@ -95,6 +100,7 @@ namespace CampaignCopilot
         public string campaignId { get; set; }
         public AiModelInfo aimodelinfo { get; set; }
         public AiModelPrompts aimodelprompts { get; set; }
+        
     }
 
     public class LocaleCompletion
@@ -102,6 +108,8 @@ namespace CampaignCopilot
         public string name { get; set; }
         public string description { get; set; }
         public string type { get; set; }
+        public string dallePrompt { get; set; }
+
     }
 
     public class LocaleObject
@@ -122,6 +130,8 @@ namespace CampaignCopilot
         public string name { get; set; }
         public string description { get; set; }
         public string type { get; set; }
+        public string dallePrompt { get; set; }
+
     }
 
     public class LocationObject
