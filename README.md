@@ -44,7 +44,10 @@ For local (and cloud deployment), will want to ensure that these properties are 
     "CosmosDbFullConnectionURL": "AccountEndpoint=https://<Cosmos Endpoint>.azure.com:443/;AccountKey=<Some Account Key>==;",
     "AzureAiCompletionEndpoint": "https://<Azure OpenAI Endpoint>.azure.com",
     "AzureAiCompletionApiKey": "<Azure OpenAI Deployment Key>",
-    "AzureAiCompletionDeployment": "<Deployment Name>"
+    "AzureAiCompletionDeployment": "<Deployment Name>",
+    "BlobStorageConnectionString":"<Connection String>",
+    "BlobStorageAccountName": "<Account Name>",
+    "BlobContainerName":"<ContainerName>"
   }
 }
 ```
