@@ -13,6 +13,11 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
+
 
 namespace CampaignCopilot
 {   
@@ -125,7 +130,9 @@ namespace CampaignCopilot
                 _logger.LogError("Invalid JSON format in response");
                 return new StatusCodeResult(500);
 
+
             }
+            
             aiModelPrompts.DallePrompt = worldCompletion.dallePrompt;
             
             // Generate Image 
@@ -153,9 +160,8 @@ namespace CampaignCopilot
             }
 
             string blobUrl = blobClient.Uri.AbsoluteUri;
-            Console.WriteLine($"{blobUrl}");
-            // Get a reference to a blob
-            // BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+
             // Save the world to CosmosDB
             WorldObject newWorld = new WorldObject
             {

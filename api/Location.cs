@@ -6,17 +6,21 @@ using Microsoft.Azure.Cosmos;
 using System.Text.Json;
 using Azure.AI.OpenAI;
 using OpenAI.Chat;
+using OpenAI.Images;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CampaignCopilot
 {
 
-    public class Location(ILogger<LocationObject> logger, CosmosClient cosmosClient, AzureOpenAIClient openaiClient)
+    public class Location(ILogger<LocationObject> logger, CosmosClient cosmosClient, AzureOpenAIClient openaiClient,BlobServiceClient blobClient)
     {
 
         private readonly ILogger<LocationObject> _logger = logger;
         private readonly CosmosClient _cosmosClient = cosmosClient;
         private readonly AzureOpenAIClient _openaiClient = openaiClient;
+        private readonly BlobServiceClient _blobClient = blobClient;
+
         string CosmosContainer = "Locations";
 
         [Function("Location")]
@@ -172,16 +176,43 @@ namespace CampaignCopilot
                 _logger.LogError("Invalid JSON format in response");
                 return new StatusCodeResult(500);
             }
+            aiModelPrompts.DallePrompt = locationCompletion.dallePrompt;
+            
+            // Generate Image 
+            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));
 
+            var imageCompletion = await imageClient.GenerateImageAsync(
+                aiModelPrompts.DallePrompt,
+                new ImageGenerationOptions()
+                {
+                    Size = GeneratedImageSize.W1024xH1024
+                }
+            );
+
+            // Get a reference to a container and blob
+            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainerName"));
+            string locationId = Guid.NewGuid().ToString("N").Substring(0, 8);
+            string blobName = $"campaign_{campaignId}_locale_{localeId}_location_{locationId}.png";
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+            
+            // Transform from uri to blob
+            using (var httpClient = new HttpClient())
+            {
+                var imageStream = await httpClient.GetStreamAsync(imageCompletion.Value.ImageUri);
+                await blobClient.UploadAsync(imageStream, true);
+            }
+
+            string blobUrl = blobClient.Uri.AbsoluteUri;
             // Save the locale to CosmosDB
             LocationObject newLocation = new LocationObject
             {
-                id = Guid.NewGuid().ToString("N").Substring(0, 8),
+                id = locationId,
                 name = locationCompletion.name,
                 description = locationCompletion.description,
                 locationType = locationCompletion.type,
                 localeId = localeId,
                 campaignId = campaignId,
+                imageUrl = blobUrl,
                 aimodelinfo = new AiModelInfo
                 {
                     ModelDeployment = Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"),
