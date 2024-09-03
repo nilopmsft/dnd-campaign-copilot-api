@@ -44,14 +44,18 @@ For local (and cloud deployment), will want to ensure that these properties are 
     "CosmosDbFullConnectionURL": "AccountEndpoint=https://<Cosmos Endpoint>.azure.com:443/;AccountKey=<Some Account Key>==;",
     "AzureAiCompletionEndpoint": "https://<Azure OpenAI Endpoint>.azure.com",
     "AzureAiCompletionApiKey": "<Azure OpenAI Deployment Key>",
-    "AzureAiCompletionDeployment": "<Deployment Name>"
+    "AzureAiCompletionDeployment": "<Deployment Name>",
+    "AzureAiImageCompletionDeployment":"<Deployment Name>",
+    "BlobStorageConnectionString":"<Connection String>",
+    "BlobStorageAccountName": "<Account Name>",
+    "BlobContainerName":"<ContainerName>"
   }
 }
 ```
 
 ## API Calls
 
-Every object has a parent object, at the very least its the Campaign itself (unless it is the campaign being created). This can effect how you lookup or create an object. Each object requires the campaignId. This means:
+Every object has a parent object, at the very least its the Campaign itself (unless it is the campaigign being created). This can effect how you lookup or create an object. Each object requires the campaignId. This means:
 
 - To look up an object, you need the objectId and the campaignId. It is a GET request to `/api/<object>?'object'Id=<objectId>&camapaignId=<campaignId>`
   - EXAMPLE OF Locale lookup: GET `/api/Locale?localeId=abc&campaignId=123`
