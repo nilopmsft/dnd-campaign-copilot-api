@@ -149,7 +149,7 @@ namespace CampaignCopilot
                 catch (JsonException ex)
                 {
                     _logger.LogError(ex, "Error deserializing JSON content");
-                    return new BadRequestObjectResult("Invalid Location JSON format in response:" + jsonResponse);
+                    return new BadRequestObjectResult("Invalid Character JSON format in response:" + jsonResponse);
                 }
             }
             else
