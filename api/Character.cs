@@ -6,17 +6,20 @@ using Microsoft.Azure.Cosmos;
 using System.Text.Json;
 using Azure.AI.OpenAI;
 using OpenAI.Chat;
+using OpenAI.Images;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CampaignCopilot
 {
 
-    public class Character(ILogger<CharacterObject> logger, CosmosClient cosmosClient, AzureOpenAIClient openaiClient)
+    public class Character(ILogger<CharacterObject> logger, CosmosClient cosmosClient, AzureOpenAIClient openaiClient,BlobServiceClient blobClient)
     {
 
         private readonly ILogger<CharacterObject> _logger = logger;
         private readonly CosmosClient _cosmosClient = cosmosClient;
         private readonly AzureOpenAIClient _openaiClient = openaiClient;
+        private readonly BlobServiceClient _blobClient = blobClient;
         string CosmosContainer = "Characters";
 
         [Function("Character")]
@@ -146,7 +149,7 @@ namespace CampaignCopilot
                 catch (JsonException ex)
                 {
                     _logger.LogError(ex, "Error deserializing JSON content");
-                    return new BadRequestObjectResult("Invalid Location JSON format in response:" + jsonResponse);
+                    return new BadRequestObjectResult("Invalid Character JSON format in response:" + jsonResponse);
                 }
             }
             else
@@ -154,9 +157,37 @@ namespace CampaignCopilot
                 _logger.LogError("Invalid JSON format in response");
                 return new StatusCodeResult(500);
             }
+            aiModelPrompts.DallePrompt = newCharacter.dallePrompt;
 
-            newCharacter.id = Guid.NewGuid().ToString("N").Substring(0, 8);
+            // Generate Image 
+            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));
+
+            var imageCompletion = await imageClient.GenerateImageAsync(
+                aiModelPrompts.DallePrompt,
+                new ImageGenerationOptions()
+                {
+                    Size = GeneratedImageSize.W1024xH1024
+                }
+            );
+
+            // Get a reference to a container and blob
+            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainerName"));
+            string characterId = Guid.NewGuid().ToString("N").Substring(0, 8);
+            string blobName = $"campaign_{campaignId}_character_{characterId}.png";
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+            
+            // Transform from uri to blob
+            using (var httpClient = new HttpClient())
+            {
+                var imageStream = await httpClient.GetStreamAsync(imageCompletion.Value.ImageUri);
+                await blobClient.UploadAsync(imageStream, true);
+            }
+
+            string blobUrl = blobClient.Uri.AbsoluteUri;
+
+            newCharacter.id = characterId;
             newCharacter.campaignId = campaignId;
+            newCharacter.imageUrl = blobUrl;
             newCharacter.aimodelinfo = new AiModelInfo
             {
                 ModelDeployment = Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"),

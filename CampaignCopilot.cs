@@ -161,6 +161,8 @@ namespace CampaignCopilot
     {
         public string id { get; set; }
         public string name { get; set; }
+        public string dallePrompt { get; set; }
+
         public string backstory { get; set; }
         public string imageUrl { get; set; }
         public string campaignId { get; set; }
