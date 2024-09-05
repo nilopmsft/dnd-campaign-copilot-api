@@ -149,7 +149,7 @@ namespace CampaignCopilot
             // Get a reference to a container and blob
             BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainerName"));
             string worldId = Guid.NewGuid().ToString("N").Substring(0, 8);
-            string blobName = $"campaign_{campaignId}_world_{worldId}.png";
+            string blobName = $"campaigns/{campaignId}/{worldId}.png";
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
             
             // Transform from uri to blob
