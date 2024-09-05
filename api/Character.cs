@@ -109,6 +109,7 @@ namespace CampaignCopilot
                 }
             }
 
+            
             //Append any existing locales if they exist
             if (existingCharacters.Count > 0)
             {
@@ -157,8 +158,8 @@ namespace CampaignCopilot
                 _logger.LogError("Invalid JSON format in response");
                 return new StatusCodeResult(500);
             }
-            aiModelPrompts.DallePrompt = newCharacter.dallePrompt;
-
+            aiModelPrompts.DallePrompt = String.Concat(newCharacter.dallePrompt , aiModelPrompts.DallePrompt);
+            
             // Generate Image 
             ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));
 
@@ -173,7 +174,7 @@ namespace CampaignCopilot
             // Get a reference to a container and blob
             BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainerName"));
             string characterId = Guid.NewGuid().ToString("N").Substring(0, 8);
-            string blobName = $"campaign_{campaignId}_character_{characterId}.png";
+            string blobName = $"campaigns/{campaignId}/{characterId}.png";
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
             
             // Transform from uri to blob
