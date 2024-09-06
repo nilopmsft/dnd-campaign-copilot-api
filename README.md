@@ -34,6 +34,8 @@ We chose to use a shared provisioned resources due to traffice levels (i.e. RU's
 
 For local (and cloud deployment), will want to ensure that these properties are provided in your local.settings.json in your project, or provided in an Azure Function App deployment.
 
+NOTE: AK would represent an Account Key
+
 ```
 {
   "Values": {
@@ -41,16 +43,32 @@ For local (and cloud deployment), will want to ensure that these properties are 
     "CosmosDbEndpointUrl": "https://<Cosmos Endpoint>.azure.com:443/",
     "CosmosDbPrimaryKey": "<Cosmos Key>",
     "CosmosDbDatabaseName": "<Cosmos DB>",
-    "CosmosDbFullConnectionURL": "AccountEndpoint=https://<Cosmos Endpoint>.azure.com:443/;AccountKey=<Some Account Key>==;",
+    "CosmosDbFullConnectionURL": "AccountEndpoint=https://<Cosmos Endpoint>.azure.com:443/;AK=<AK>==;",
     "AzureAiCompletionEndpoint": "https://<Azure OpenAI Endpoint>.azure.com",
     "AzureAiCompletionApiKey": "<Azure OpenAI Deployment Key>",
     "AzureAiCompletionDeployment": "<Deployment Name>",
     "AzureAiImageCompletionDeployment":"<Deployment Name>",
-    "BlobStorageConnectionString":"<Connection String>",
-    "BlobStorageAccountName": "<Account Name>",
+    "BlobStorageConnectionString":"DefaultEndpointsProtocol=https;AccountName=<Account Name>;AK=<AK>;>EndpointSuffix=core.windows.net",
     "BlobContainerName":"<ContainerName>"
   }
 }
+```
+
+- Published Function
+
+The below Az CLI can make it easy to update the function app to have the environment variables needed as local settings are not published.
+
+```
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbEndpointUrl=https://<Cosmos Endpoint>.azure.com:443/"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbPrimaryKey=<Cosmos Key>"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbFullConnectionURL=AccountEndpoint=https://<Cosmos Endpoint>.azure.com:443/;AccountKey=<Some Account Key>==;"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbDatabaseName=<Cosmos DB>"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiCompletionEndpoint=https://<Azure OpenAI Endpoint>.azure.com"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiCompletionApiKey=<Azure OpenAI Deployment Key>"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiCompletionDeployment=<Deployment Name>"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiImageCompletionDeployment=<Deployment Name>"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "BlobStorageConnectionString=DefaultEndpointsProtocol=https;AccountName=<Account Name>;AccountKey=<Account Key;>EndpointSuffix=core.windows.net"
+az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "BlobContainerName=<ContainerName>"
 ```
 
 ## API Calls

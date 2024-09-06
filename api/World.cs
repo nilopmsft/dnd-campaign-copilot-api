@@ -133,7 +133,9 @@ namespace CampaignCopilot
 
             }
             
-            aiModelPrompts.DallePrompt = worldCompletion.dallePrompt;
+            aiModelPrompts.DallePrompt = String.Concat(worldCompletion.dalleprompt, " " , aiModelPrompts.DallePrompt);
+
+            _logger.LogInformation("Dalle Prompt:\n" + aiModelPrompts.DallePrompt);
             
             // Generate Image 
             ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));

@@ -176,7 +176,9 @@ namespace CampaignCopilot
                 return new StatusCodeResult(500);
             }
 
-            aiModelPrompts.DallePrompt = localeCompletion.dallePrompt;
+            aiModelPrompts.DallePrompt = String.Concat(localeCompletion.dalleprompt, " " , aiModelPrompts.DallePrompt);
+
+            _logger.LogInformation("Dalle Prompt:\n" + aiModelPrompts.DallePrompt);
             
             // Generate Image 
             ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));

@@ -80,7 +80,8 @@ namespace CampaignCopilot
         public AiModelPrompts(string promptFile)
         {
             // Load the JSON file content
-            string jsonString = File.ReadAllText("resources/prompts/" + promptFile + ".json");
+            // string jsonString = File.ReadAllText("resources/prompts/" + promptFile + ".json");
+            string jsonString = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "resources/prompts", promptFile + ".json"));
 
             // Deserialize the JSON into an instance of AiModelPrompts
             AiModelPrompts modelPrompts = JsonSerializer.Deserialize<AiModelPrompts>(jsonString);
@@ -98,7 +99,7 @@ namespace CampaignCopilot
     {
         public string name { get; set; }
         public string description { get; set; }
-        public string dallePrompt { get; set; }
+        public string dalleprompt { get; set; }
     }
 
     public class WorldObject
@@ -118,7 +119,7 @@ namespace CampaignCopilot
         public string name { get; set; }
         public string description { get; set; }
         public string type { get; set; }
-        public string dallePrompt { get; set; }
+        public string dalleprompt { get; set; }
 
     }
 
@@ -140,7 +141,7 @@ namespace CampaignCopilot
         public string name { get; set; }
         public string description { get; set; }
         public string type { get; set; }
-        public string dallePrompt { get; set; }
+        public string dalleprompt { get; set; }
 
     }
 
@@ -161,8 +162,7 @@ namespace CampaignCopilot
     {
         public string id { get; set; }
         public string name { get; set; }
-        public string dallePrompt { get; set; }
-
+        public string dalleprompt { get; set; }
         public string backstory { get; set; }
         public string imageUrl { get; set; }
         public string campaignId { get; set; }
