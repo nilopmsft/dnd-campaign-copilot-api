@@ -127,6 +127,8 @@ namespace CampaignCopilot
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
                 new UserChatMessage(aiModelPrompts.UserPrompt),
+                aiModelPrompts.StructurePrompt,
+
             ]);
 
             _logger.LogInformation("Completion:\n" + completion.Content[0].Text);
@@ -158,9 +160,7 @@ namespace CampaignCopilot
                 _logger.LogError("Invalid JSON format in response");
                 return new StatusCodeResult(500);
             }
-            aiModelPrompts.DallePrompt = String.Concat(newCharacter.dalleprompt, " " , aiModelPrompts.DallePrompt);
-
-            _logger.LogInformation("Dalle Prompt:\n" + aiModelPrompts.DallePrompt);
+            aiModelPrompts.DallePrompt = String.Concat(newCharacter.dalleprompt," " , aiModelPrompts.DallePrompt);
             
             // Generate Image 
             ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));
