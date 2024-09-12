@@ -140,11 +140,13 @@ namespace CampaignCopilot
 
             _logger.LogInformation("User Prompt:\n" + aiModelPrompts.UserPrompt);
 
-            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment")); 
+            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"));
+
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
                 new UserChatMessage(aiModelPrompts.UserPrompt),
+                aiModelPrompts.StructurePrompt,
             ]);
 
             LocaleCompletion localeCompletion;

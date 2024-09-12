@@ -102,6 +102,7 @@ namespace CampaignCopilot
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
                 new UserChatMessage(aiModelPrompts.UserPrompt),
+                aiModelPrompts.StructurePrompt,
             ]);
 
             WorldCompletion worldCompletion;
