@@ -200,9 +200,15 @@ namespace CampaignCopilot
     public class Definition
     {
         public Definition() { 
-            name = "";
             character_class = "";
             level = "";
+            race = "";
+            background = "";
+            alignment = "";
+            age = "";
+            height = "";
+            weight = "";
+            hair = "";
         }
 
         public string character_class { get; set; }
