@@ -160,6 +160,25 @@ namespace CampaignCopilot
 
     public class CharacterObject
     {
+        public CharacterObject() {
+            id = "";
+            name = "";
+            dalleprompt = "";
+            backstory = "";
+            imageUrl = "";
+            campaignId = "";
+
+            definition = new Definition();
+            stats = new Stats();
+            saving_throws = new SavingThrows();
+            skills = new Skills();
+            health = new Health();
+            attacks_and_spellcasting = new List<AttacksAndSpellCasting>();
+            personality = new Personality();
+            features_and_traits = new List<string>();
+            aimodelinfo = new AiModelInfo();
+            aimodelprompts = new AiModelPrompts();
+        }
         public string id { get; set; }
         public string name { get; set; }
         public string dalleprompt { get; set; }
@@ -180,6 +199,12 @@ namespace CampaignCopilot
 
     public class Definition
     {
+        public Definition() { 
+            name = "";
+            character_class = "";
+            level = "";
+        }
+
         public string character_class { get; set; }
         public string level { get; set; }
         public string race { get; set; }
@@ -193,6 +218,14 @@ namespace CampaignCopilot
 
     public class Stats
     {
+        public Stats() { 
+            strength = "";
+            dexterity = "";
+            constitution = "";
+            intelligence = "";
+            wisdom = "";
+            charisma = "";
+        }
         public string strength { get; set; }
         public string dexterity { get; set; }
         public string constitution { get; set; }
@@ -203,6 +236,14 @@ namespace CampaignCopilot
 
     public class SavingThrows
     {
+        public SavingThrows() {
+            strength = "";
+            dexterity = "";
+            constitution = "";
+            intelligence = "";
+            wisdom = "";
+            charisma = "";
+        }
         public string strength { get; set; }
         public string dexterity { get; set; }
         public string constitution { get; set; }
@@ -213,6 +254,26 @@ namespace CampaignCopilot
 
     public class Skills
     {
+        public Skills() {
+            acrobatics = "";
+            animal_handling = "";
+            arcana = "";
+            athletics = "";
+            deception = "";
+            history = "";
+            insight = "";
+            intimidation = "";
+            investigation = "";
+            medicine = "";
+            nature = "";
+            perception = "";
+            performance = "";
+            persuasion = "";
+            religion = "";
+            sleight_of_hand = "";
+            stealth = "";
+            survival = "";
+        }
         public string acrobatics { get; set; }
         public string animal_handling { get; set; }
         public string arcana { get; set; }
@@ -235,6 +296,15 @@ namespace CampaignCopilot
 
     public class Health
     {
+        public Health() {
+            armor_class = "";
+            initiative = "";
+            speed = "";
+            maximum_hit_points = "";
+            current_hit_points = "";
+            hit_dice = "";
+            death_saves = "";
+        }
         public string armor_class { get; set; }
         public string initiative { get; set; }
         public string speed { get; set; }
@@ -246,6 +316,12 @@ namespace CampaignCopilot
 
     public class AttacksAndSpellCasting
     {
+        public AttacksAndSpellCasting() { 
+            name = "";
+            attack_bonus = "";
+            damage_type = "";
+        }
+
         public string name { get; set; }
         public string attack_bonus { get; set; }
         public string damage_type { get; set; }
@@ -253,6 +329,12 @@ namespace CampaignCopilot
 
     public class Personality
     {
+        public Personality() {
+            personality_traits = "";
+            ideals = "";
+            bonds = "";
+            flaws = "";
+        }
         public string personality_traits { get; set; }
         public string ideals { get; set; }
         public string bonds { get; set; }
@@ -261,10 +343,13 @@ namespace CampaignCopilot
 
     public class CharacterInfo
     {
+        public CharacterInfo() {
+            name = "";
+            character_class = "";
+        }
         public string name { get; set; }
         public string character_class { get; set; }
         public string race { get; set; }
     }
 
 }
-
