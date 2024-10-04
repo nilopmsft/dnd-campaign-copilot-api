@@ -14,8 +14,7 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddSingleton<CosmosClient>(serviceProvider =>
         {
-            return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbEndpointUrl"),Environment.GetEnvironmentVariable("CosmosDbPrimaryKey"));
-            // return new CosmosClient(accountEndpoint: Environment.GetEnvironmentVariable("CosmosDbEndpointUrl"),tokenCredential: new DefaultAzureCredential());
+            return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbEndpointUrl"),new DefaultAzureCredential());
         });
         services.AddSingleton<BlobServiceClient>(_ =>
         {
