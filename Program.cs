@@ -14,7 +14,10 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddSingleton<CosmosClient>(serviceProvider =>
         {
-            return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbEndpointUrl"),new DefaultAzureCredential());
+            return new CosmosClient(
+                Environment.GetEnvironmentVariable("CosmosDbUri"),
+                new DefaultAzureCredential()
+            );
         });
         services.AddSingleton<BlobServiceClient>(_ =>
         {
@@ -25,9 +28,10 @@ var host = new HostBuilder()
         });
         services.AddSingleton<AzureOpenAIClient>(serviceProvider =>
         {
-            var endpoint = new Uri(Environment.GetEnvironmentVariable("AzureAiCompletionEndpoint"));
-            var apiKey = new AzureKeyCredential(Environment.GetEnvironmentVariable("AzureAiCompletionApiKey"));
-            return new AzureOpenAIClient(endpoint, apiKey);
+            return new AzureOpenAIClient(
+                new Uri(Environment.GetEnvironmentVariable("AzureAiUri")),
+                new DefaultAzureCredential()
+            );
         });
     })
     .Build();
