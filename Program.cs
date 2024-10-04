@@ -2,10 +2,10 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.Cosmos;
+using Azure;
 using Azure.AI.OpenAI;
 using Azure.Storage.Blobs;
-using Azure;
-
+using Azure.Identity;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -14,12 +14,15 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddSingleton<CosmosClient>(serviceProvider =>
         {
-            return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbEndpointUrl"),Environment.GetEnvironmentVariable("CosmosDbPrimaryKey"));
+            return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbEndpointUrl"),new DefaultAzureCredential());
         });
-        services.AddSingleton<BlobServiceClient>(ServiceProviderserviceProvider =>
+        services.AddSingleton<BlobServiceClient>(_ =>
         {
-            return new BlobServiceClient(Environment.GetEnvironmentVariable("BlobStorageConnectionString"));
-        } );
+            return new BlobServiceClient(
+                new Uri(Environment.GetEnvironmentVariable("BlobStorageUri")),
+                new DefaultAzureCredential()
+            );
+        });
         services.AddSingleton<AzureOpenAIClient>(serviceProvider =>
         {
             var endpoint = new Uri(Environment.GetEnvironmentVariable("AzureAiCompletionEndpoint"));
@@ -28,5 +31,6 @@ var host = new HostBuilder()
         });
     })
     .Build();
+
 
 host.Run();
