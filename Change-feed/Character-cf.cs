@@ -47,7 +47,7 @@ namespace CampaignCopilot
                         imageUrl = characterObject.imageUrl
                     };
 
-                    ItemResponse<CampaignObject> response = await _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer).PatchItemAsync<CampaignObject>(
+                    ItemResponse<CampaignObject> response = await _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer).PatchItemAsync<CampaignObject>(
                         id: campaignId,
                         partitionKey: new PartitionKey(campaignId),
                         patchOperations: [
