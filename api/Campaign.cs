@@ -12,6 +12,7 @@ namespace CampaignCopilot
 
         private readonly ILogger<Campaign> _logger = logger;
         private readonly CosmosClient _cosmosClient = cosmosClient;
+        string CosmosContainer = "Campaigns";
 
         [Function("Campaign")]
         public async Task<IActionResult> CampaignAsync([HttpTrigger(AuthorizationLevel.Function, ["get","post"])] HttpRequest req)
@@ -43,7 +44,7 @@ namespace CampaignCopilot
             string campaignId = req.Query["campaignId"].ToString();
 
 
-                Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), "Campaigns");
+                Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
                 try
                 {
 
@@ -76,7 +77,7 @@ namespace CampaignCopilot
             };
 
             // Save the campaign to the Cosmos DB container
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), "Campaigns");
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
             ItemResponse<CampaignObject> response = await cosmosContainer.CreateItemAsync(newCampaign, new PartitionKey(newCampaign.id));
 
             return new OkObjectResult(response.Resource);
