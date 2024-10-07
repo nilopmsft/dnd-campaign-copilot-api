@@ -72,7 +72,7 @@ namespace CampaignCopilot
             string worldId = req.Query["worldId"].ToString();
             string campaignId = req.Query["campaignId"].ToString();
 
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
             try
             {
 
@@ -96,13 +96,12 @@ namespace CampaignCopilot
 
             AiModelPrompts aiModelPrompts = new AiModelPrompts("world");
 
-            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"));
+            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiTextDeployment"));
 
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
-                new UserChatMessage(aiModelPrompts.UserPrompt),
-                aiModelPrompts.StructurePrompt,
+                new UserChatMessage(aiModelPrompts.UserPrompt)
             ]);
 
             WorldCompletion worldCompletion;
@@ -134,12 +133,12 @@ namespace CampaignCopilot
 
             }
             
-            aiModelPrompts.DallePrompt = String.Concat(worldCompletion.dalleprompt, " " , aiModelPrompts.DallePrompt);
+            aiModelPrompts.DallePrompt = String.Concat(worldCompletion.dalleprompt," " , aiModelPrompts.DallePrompt);
 
             _logger.LogInformation("Dalle Prompt:\n" + aiModelPrompts.DallePrompt);
             
             // Generate Image 
-            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));
+            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageDeployment"));
 
             var imageCompletion = await imageClient.GenerateImageAsync(
                 aiModelPrompts.DallePrompt,
@@ -150,7 +149,7 @@ namespace CampaignCopilot
             );
 
             // Get a reference to a container and blob
-            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainerName"));
+            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainer"));
             string worldId = Guid.NewGuid().ToString("N").Substring(0, 8);
             string blobName = $"campaigns/{campaignId}/{worldId}.png";
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
@@ -175,13 +174,13 @@ namespace CampaignCopilot
                 imageUrl = blobUrl,
                 aimodelinfo = new AiModelInfo
                 {
-                    ModelDeployment = Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"),
-                    ModelEndpoint = Environment.GetEnvironmentVariable("AzureAiCompletionEndpoint")
+                    ModelDeployment = Environment.GetEnvironmentVariable("AzureAiTextDeployment"),
+                    ModelEndpoint = Environment.GetEnvironmentVariable("AzureAiUri")
                 },
                 aimodelprompts = aiModelPrompts
             };
 
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
             ItemResponse<WorldObject> response = await cosmosContainer.CreateItemAsync(newWorld, new PartitionKey(newWorld.campaignId));
 
             return new OkObjectResult(response.Resource);

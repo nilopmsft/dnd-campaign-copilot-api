@@ -61,7 +61,7 @@ namespace CampaignCopilot
             string locationId = req.Query["locationId"].ToString();
             string campaignId = req.Query["campaignId"].ToString();
 
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
             try
             {
 
@@ -86,7 +86,7 @@ namespace CampaignCopilot
 
             // Get existing Locale from cosmos to provide the description to the AI Prompt
             LocaleObject locale;
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), "Locales");
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), "Locales");
             try
             {
                 ItemResponse<Object> localeResponse = await cosmosContainer.ReadItemAsync<Object>(localeId, new PartitionKey(campaignId));
@@ -104,7 +104,7 @@ namespace CampaignCopilot
             aiModelPrompts.UserPrompt += "\nLocale Description:\n" + locale.description;
 
             // Get Existing Locations for the Locale
-            cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
+            cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
             QueryDefinition queryDefinition = new QueryDefinition("SELECT c.locationType FROM c WHERE c.campaignId = '" + campaignId + "' and c.localeId='" + localeId + "'");
             _logger.LogInformation("Query Definition: " + queryDefinition.QueryText);
             FeedIterator<Object> queryResultSetIterator = cosmosContainer.GetItemQueryIterator<Object>(queryDefinition);
@@ -141,13 +141,11 @@ namespace CampaignCopilot
 
             _logger.LogInformation("User Prompt:\n" + aiModelPrompts.UserPrompt);
 
-            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"));
+            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiTextDeployment"));
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
-                new UserChatMessage(aiModelPrompts.UserPrompt),
-                aiModelPrompts.StructurePrompt,
-
+                new UserChatMessage(aiModelPrompts.UserPrompt)
             ]);
 
             LocationCompletion locationCompletion;
@@ -184,7 +182,7 @@ namespace CampaignCopilot
             _logger.LogInformation("Dalle Prompt:\n" + aiModelPrompts.DallePrompt);
             
             // Generate Image 
-            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageCompletionDeployment"));
+            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageDeployment"));
 
             var imageCompletion = await imageClient.GenerateImageAsync(
                 aiModelPrompts.DallePrompt,
@@ -195,7 +193,7 @@ namespace CampaignCopilot
             );
 
             // Get a reference to a container and blob
-            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainerName"));
+            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainer"));
             string locationId = Guid.NewGuid().ToString("N").Substring(0, 8);
             string blobName = $"campaigns/{campaignId}/{locationId}.png";
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
@@ -220,13 +218,13 @@ namespace CampaignCopilot
                 imageUrl = blobUrl,
                 aimodelinfo = new AiModelInfo
                 {
-                    ModelDeployment = Environment.GetEnvironmentVariable("AzureAiCompletionDeployment"),
-                    ModelEndpoint = Environment.GetEnvironmentVariable("AzureAiCompletionEndpoint")
+                    ModelDeployment = Environment.GetEnvironmentVariable("AzureAiTextDeployment"),
+                    ModelEndpoint = Environment.GetEnvironmentVariable("AzureAiUri")
                 },
                 aimodelprompts = aiModelPrompts
             };
 
-            cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabaseName"), CosmosContainer);
+            cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
             ItemResponse<LocationObject> response = await cosmosContainer.CreateItemAsync(newLocation, new PartitionKey(campaignId));
 
             return new OkObjectResult(response.Resource);

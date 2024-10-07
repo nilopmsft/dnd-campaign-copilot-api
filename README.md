@@ -1,6 +1,6 @@
 # D&D CampAIgn Copilot
 
-This project is for an openhack to learn Azure Cosmos DB and Azure OpenAI services and configurations. We are using the various LLM capabilities in Azure OpenAI to help us create a campaign for Dungeons and Dragons with all details, images and storing them in Cosmos for retention. At the end it could assist a Dungeon Master to take a campaign to a group and begin their quest.
+This project started as an openhack to learn Azure Cosmos DB and Azure OpenAI services and their respective configurations. We are using the various LLM capabilities in Azure OpenAI to help us create a campaign for Dungeons and Dragons with all details, images and storing details in Cosmos for retention. At the end it could assist a Dungeon Master to take a campaign to a group and begin their quest.
 
 This repo holds all the API logic and changefeed processors for cosmos that are related to building (click on each for examples):
 
@@ -32,44 +32,52 @@ We chose to use a shared provisioned resources due to traffice levels (i.e. RU's
 
 ## App Configuration
 
-For local (and cloud deployment), will want to ensure that these properties are provided in your local.settings.json in your project, or provided in an Azure Function App deployment.
+### Authentication
 
-NOTE: AK would represent an Account Key
+For security purposes, we use Managed Identities to authenticate against the various services (Cosmos, Blob Storage, Azure AI). For local development you can utilize your own login to test.
+Review [here](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/local-development-dev-accounts?tabs=azure-portal%2Csign-in-visual-studio%2Ccommand-line#3---sign-in-to-azure-using-developer-tooling) for your dev environment. For a deployed Function App, you can utilize System Assigned or User Assigned Managed Identities, both having their own benefits. The permissions needed for both user/group and Managed Identity authentication of services are
+
+### Permissions 
+**Cosmos DB**: [Data Plane Access](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/security/how-to-grant-data-plane-role-based-access?tabs=built-in-definition%2Ccsharp&pivots=azure-interface-cli#permission-model)
+
+**Blob Storage**: 'Storage Blob Data Contributor' Role
+
+**Azure AI Service**: 'Cognitive Services OpenAI User' Role (this is at the Azure Service level where the model deployments exist)
+
+### Environment Variables
+
+For local (and cloud deployment), will want to ensure that these properties are provided in your local.settings.json in your project, or provided in an Azure Function App deployment.
 
 ```
 {
   "Values": {
     ...
-    "CosmosDbEndpointUrl": "https://<Cosmos Endpoint>.azure.com:443/",
-    "CosmosDbPrimaryKey": "<Cosmos Key>",
-    "CosmosDbDatabaseName": "<Cosmos DB>",
-    "CosmosDbFullConnectionURL": "AccountEndpoint=https://<Cosmos Endpoint>.azure.com:443/;AK=<AK>==;",
-    "AzureAiCompletionEndpoint": "https://<Azure OpenAI Endpoint>.azure.com",
-    "AzureAiCompletionApiKey": "<Azure OpenAI Deployment Key>",
-    "AzureAiCompletionDeployment": "<Deployment Name>",
-    "AzureAiImageCompletionDeployment":"<Deployment Name>",
-    "BlobStorageConnectionString":"DefaultEndpointsProtocol=https;AccountName=<Account Name>;AK=<AK>;>EndpointSuffix=core.windows.net",
-    "BlobContainerName":"<ContainerName>"
+    "CosmosDbUri": "https://<CosmosDbAccount>.documents.azure.com:443/",
+    "CosmosDbDatabase": "<CosmosDatabase>",
+    "BlobStorageUri":"https://<StorageAccount>.blob.core.windows.net/",
+    "BlobContainer":"<Container>",
+    "AzureAiUri": "https://<AiServiceUri>.openai.azure.com/",
+    "AzureAiTextDeployment": "<TextDeploymentName>",
+    "AzureAiImageDeployment":"<ImageDeploymentName>",
+    "CosmosDbFullConnectionURL": "AccountEndpoint=https://<CosmosDbAccount>:443/;AccountKey=<SomeKey>"
   }
 }
 ```
 
 - Published Function
 
-The below Az CLI can make it easy to update the function app to have the environment variables needed as local settings are not published.
+The below Az CLI can make it easy to update the function app to have the environment variables needed as local settings are not published. You will need to adjust the values accordingly. Running this does take a bit of time so be patient.
 
 ```
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbEndpointUrl=https://<Cosmos Endpoint>.azure.com:443/"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbPrimaryKey=<Cosmos Key>"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbFullConnectionURL=AccountEndpoint=https://<Cosmos Endpoint>.azure.com:443/;AccountKey=<Some Account Key>==;"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "CosmosDbDatabaseName=<Cosmos DB>"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiCompletionEndpoint=https://<Azure OpenAI Endpoint>.azure.com"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiCompletionApiKey=<Azure OpenAI Deployment Key>"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiCompletionDeployment=<Deployment Name>"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "AzureAiImageCompletionDeployment=<Deployment Name>"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "BlobStorageConnectionString=DefaultEndpointsProtocol=https;AccountName=<Account Name>;AccountKey=<Account Key;>EndpointSuffix=core.windows.net"
-az functionapp config appsettings set --name <appname> --resource-group <rgname> --settings "BlobContainerName=<ContainerName>"
+APP_NAME=<app name>
+RESOURCE_GROUP=<resource group>
+# REPEAT BELOW FOR EACH SETTING AND VALUE
+az functionapp config appsettings set --name $APP_NAME --resource-group $RESOURCE_GROUP --settings "<SettingName>=<Value>"
 ```
+
+- User Assigned Managed Identity (optional)
+
+If you are using User Assigned Managed Identities for the authentication (see above), you will need to provide the AZURE_CLIENT_ID environment variable on the function (not needed for local testing). Ensure you provide the **Client ID** of the Managed Identity. Otherwise you might see an error, "Unable to load the proper Managed Identity Azure Function App"
 
 ## API Calls
 
@@ -84,4 +92,4 @@ The reason for the campaignID is that we need that to tie back to the campaign w
 
 ## Note
 
-This is a fun project and understand that the accuracy and effectiveness of characters or locations are simply from the mind of the AI LLM. In no way are we suggesting the existing D&D resources are inferior and is simply for fun and learning. Who knows the results of building this could lead to an exciting adventure.
+This is a fun project and understand that the accuracy and realistic nature of characters or locations are simply from the mind of an AI LLM. In no way are we suggesting the existing D&D resources are inferior or this is a replacement. This project is simply for fun and learning. Who knows the results of building this could lead to an exciting adventure.
