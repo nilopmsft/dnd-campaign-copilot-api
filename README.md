@@ -79,6 +79,10 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RESOURC
 
 If you are using User Assigned Managed Identities for the authentication (see above), you will need to provide the AZURE_CLIENT_ID environment variable on the function (not needed for local testing). Ensure you provide the **Client ID** of the Managed Identity. Otherwise you might see an error, "Unable to load the proper Managed Identity Azure Function App"
 
+- Github Actions with MI (optional)
+
+This expands upon the User Assigned Managed Identity above where rather than using a Shared Access Key for the storage account publishing builds to, we can use the Managed Identity for authorization. Useful information on this topic is provided [here](https://github.com/azure/functions-action?tab=readme-ov-file#manged-identities-for-storage-account-access-and-package-deployments-on-linux-consumption-sku)
+
 ## API Calls
 
 Every object has a parent object, at the very least its the Campaign itself (unless it is the campaigign being created). This can effect how you lookup or create an object. Each object requires the campaignId. This means:
