@@ -126,9 +126,7 @@ namespace CampaignCopilot
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
-                new UserChatMessage(aiModelPrompts.UserPrompt),
-                aiModelPrompts.StructurePrompt,
-
+                new UserChatMessage(aiModelPrompts.UserPrompt)
             ]);
 
             _logger.LogInformation("Completion:\n" + completion.Content[0].Text);
@@ -160,6 +158,7 @@ namespace CampaignCopilot
                 _logger.LogError("Invalid JSON format in response");
                 return new StatusCodeResult(500);
             }
+
             aiModelPrompts.DallePrompt = String.Concat(newCharacter.dalleprompt," " , aiModelPrompts.DallePrompt);
             
             // Generate Image 

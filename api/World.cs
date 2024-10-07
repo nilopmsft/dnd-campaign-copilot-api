@@ -101,8 +101,7 @@ namespace CampaignCopilot
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
-                new UserChatMessage(aiModelPrompts.UserPrompt),
-                aiModelPrompts.StructurePrompt,
+                new UserChatMessage(aiModelPrompts.UserPrompt)
             ]);
 
             WorldCompletion worldCompletion;
@@ -134,7 +133,7 @@ namespace CampaignCopilot
 
             }
             
-            aiModelPrompts.DallePrompt = String.Concat(worldCompletion.dalleprompt, " " , aiModelPrompts.DallePrompt);
+            aiModelPrompts.DallePrompt = String.Concat(worldCompletion.dalleprompt," " , aiModelPrompts.DallePrompt);
 
             _logger.LogInformation("Dalle Prompt:\n" + aiModelPrompts.DallePrompt);
             

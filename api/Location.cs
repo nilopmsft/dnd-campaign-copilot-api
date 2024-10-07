@@ -145,9 +145,7 @@ namespace CampaignCopilot
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
-                new UserChatMessage(aiModelPrompts.UserPrompt),
-                aiModelPrompts.StructurePrompt,
-
+                new UserChatMessage(aiModelPrompts.UserPrompt)
             ]);
 
             LocationCompletion locationCompletion;
