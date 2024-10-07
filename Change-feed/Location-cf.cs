@@ -17,7 +17,6 @@ namespace CampaignCopilot
         public async Task Run([CosmosDBTrigger(
           databaseName: "dnd",
           containerName: "Locations",
-          Connection = "CosmosDbFullConnectionURL",
           LeaseContainerName = "Leases",
           CreateLeaseContainerIfNotExists = true,
           LeaseContainerPrefix = "locationsCFP_",

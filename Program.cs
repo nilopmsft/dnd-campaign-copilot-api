@@ -15,7 +15,7 @@ var host = new HostBuilder()
         services.AddSingleton<CosmosClient>(serviceProvider =>
         {
             return new CosmosClient(
-                Environment.GetEnvironmentVariable("CosmosDbUri"),
+                Environment.GetEnvironmentVariable("CosmosDB__accountEndpoint"),
                 new DefaultAzureCredential()
             );
         });

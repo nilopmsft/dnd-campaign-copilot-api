@@ -52,7 +52,7 @@ For local (and cloud deployment), will want to ensure that these properties are 
 {
   "Values": {
     ...
-    "CosmosDbUri": "https://<CosmosDbAccount>.documents.azure.com:443/",
+    "CosmosDB__accountEndpoint": "https://<CosmosDbAccount>.documents.azure.com:443/",
     "CosmosDbDatabase": "<CosmosDatabase>",
     "BlobStorageUri":"https://<StorageAccount>.blob.core.windows.net/",
     "BlobContainer":"<Container>",
