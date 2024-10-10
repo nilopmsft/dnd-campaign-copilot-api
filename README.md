@@ -53,12 +53,12 @@ For local (and cloud deployment), will want to ensure that these properties are 
   "Values": {
     ...
     "CosmosDB__accountEndpoint": "https://<CosmosDbAccount>.documents.azure.com:443/",
-    "CosmosDbDatabase": "<CosmosDatabase>",
-    "BlobStorageUri":"https://<StorageAccount>.blob.core.windows.net/",
-    "BlobContainer":"<Container>",
-    "AzureAiUri": "https://<AiServiceUri>.openai.azure.com/",
-    "AzureAiTextDeployment": "<TextDeploymentName>",
-    "AzureAiImageDeployment":"<ImageDeploymentName>",
+    "CosmosDB__database": "<CosmosDatabase>",
+    "BlobStorage_accountEndpoint":"https://<StorageAccount>.blob.core.windows.net/",
+    "BlobStorage_container":"<Container>",
+    "AzureAi_accountEndpoint": "https://<AiServiceUri>.openai.azure.com/",
+    "AzureAi_textDeployment": "<TextDeploymentName>",
+    "AzureAi_imageDeployment":"<ImageDeploymentName>",
     "CosmosDbFullConnectionURL": "AccountEndpoint=https://<CosmosDbAccount>:443/;AccountKey=<SomeKey>"
   }
 }

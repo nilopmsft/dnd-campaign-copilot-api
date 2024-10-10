@@ -59,7 +59,7 @@ namespace CampaignCopilot
             string characterId = req.Query["characterId"].ToString();
             string campaignId = req.Query["campaignId"].ToString();
 
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDB__database"), CosmosContainer);
             try
             {
 
@@ -84,7 +84,7 @@ namespace CampaignCopilot
             AiModelPrompts aiModelPrompts = new AiModelPrompts("character");
 
             // Get Existing Characters for the Campaign
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDB__database"), CosmosContainer);
             QueryDefinition queryDefinition = new QueryDefinition("SELECT c.name, c.definition.character_class, c.definition.race FROM c WHERE c.campaignId = '" + campaignId + "'");
             _logger.LogInformation("Query Definition: " + queryDefinition.QueryText);
             FeedIterator<Object> queryResultSetIterator = cosmosContainer.GetItemQueryIterator<Object>(queryDefinition);
@@ -122,7 +122,7 @@ namespace CampaignCopilot
 
             // _logger.LogInformation("User Prompt:\n" + aiModelPrompts.UserPrompt);
 
-            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAiTextDeployment"));
+            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAi_textDeployment"));
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
@@ -162,7 +162,7 @@ namespace CampaignCopilot
             aiModelPrompts.DallePrompt = String.Concat(newCharacter.dalleprompt," " , aiModelPrompts.DallePrompt);
             
             // Generate Image 
-            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAiImageDeployment"));
+            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAi_imageDeployment"));
 
             var imageCompletion = await imageClient.GenerateImageAsync(
                 aiModelPrompts.DallePrompt,
@@ -173,7 +173,7 @@ namespace CampaignCopilot
             );
 
             // Get a reference to a container and blob
-            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobContainer"));
+            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobStorage_container"));
             string characterId = Guid.NewGuid().ToString("N").Substring(0, 8);
             string blobName = $"campaigns/{campaignId}/{characterId}.png";
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
@@ -192,14 +192,14 @@ namespace CampaignCopilot
             newCharacter.imageUrl = blobUrl;
             newCharacter.aimodelinfo = new AiModelInfo
             {
-                ModelDeployment = Environment.GetEnvironmentVariable("AzureAiTextDeployment"),
-                ModelEndpoint = Environment.GetEnvironmentVariable("AzureAiUri")
+                ModelDeployment = Environment.GetEnvironmentVariable("AzureAi_textDeployment"),
+                ModelEndpoint = Environment.GetEnvironmentVariable("AzureAi_accountEndpoint")
             };
             newCharacter.aimodelprompts = aiModelPrompts;
 
             _logger.LogInformation("Character Object:\n" + JsonSerializer.Serialize(newCharacter));
 
-            cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
+            cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDB__database"), CosmosContainer);
             ItemResponse<CharacterObject> response = await cosmosContainer.CreateItemAsync(newCharacter, new PartitionKey(campaignId));
 
             return new OkObjectResult(response.Resource);
