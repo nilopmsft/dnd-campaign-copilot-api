@@ -1,5 +1,7 @@
 # D&D CampAIgn Copilot
 
+![Deploy to Azure](https://aka.ms/deploytoazurebutton)
+
 This project started as an openhack to learn Azure Cosmos DB and Azure OpenAI services and their respective configurations. We are using the various LLM capabilities in Azure OpenAI to help us create a campaign for Dungeons and Dragons with all details, images and storing details in Cosmos for retention. At the end it could assist a Dungeon Master to take a campaign to a group and begin their quest.
 
 This repo holds all the API logic and changefeed processors for cosmos that are related to building (click on each for examples):
