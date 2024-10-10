@@ -122,7 +122,7 @@ namespace CampaignCopilot
 
             // _logger.LogInformation("User Prompt:\n" + aiModelPrompts.UserPrompt);
 
-            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAi_textDeployment"));
+            ChatClient chatClient = _openaiClient.GetChatClient(Environment.GetEnvironmentVariable("AzureAi__textDeployment"));
             ChatCompletion completion = chatClient.CompleteChat(
             [
                 new SystemChatMessage(aiModelPrompts.SystemPrompt),
@@ -162,7 +162,7 @@ namespace CampaignCopilot
             aiModelPrompts.DallePrompt = String.Concat(newCharacter.dalleprompt," " , aiModelPrompts.DallePrompt);
             
             // Generate Image 
-            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAi_imageDeployment"));
+            ImageClient imageClient = _openaiClient.GetImageClient(Environment.GetEnvironmentVariable("AzureAi__imageDeployment"));
 
             var imageCompletion = await imageClient.GenerateImageAsync(
                 aiModelPrompts.DallePrompt,
@@ -173,7 +173,7 @@ namespace CampaignCopilot
             );
 
             // Get a reference to a container and blob
-            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobStorage_container"));
+            BlobContainerClient containerClient = _blobClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("BlobStorage__container"));
             string characterId = Guid.NewGuid().ToString("N").Substring(0, 8);
             string blobName = $"campaigns/{campaignId}/{characterId}.png";
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
@@ -192,8 +192,8 @@ namespace CampaignCopilot
             newCharacter.imageUrl = blobUrl;
             newCharacter.aimodelinfo = new AiModelInfo
             {
-                ModelDeployment = Environment.GetEnvironmentVariable("AzureAi_textDeployment"),
-                ModelEndpoint = Environment.GetEnvironmentVariable("AzureAi_accountEndpoint")
+                ModelDeployment = Environment.GetEnvironmentVariable("AzureAi__textDeployment"),
+                ModelEndpoint = Environment.GetEnvironmentVariable("AzureAi__accountEndpoint")
             };
             newCharacter.aimodelprompts = aiModelPrompts;
 

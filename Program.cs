@@ -22,14 +22,14 @@ var host = new HostBuilder()
         services.AddSingleton<BlobServiceClient>(_ =>
         {
             return new BlobServiceClient(
-                new Uri(Environment.GetEnvironmentVariable("BlobStorage_accountEndpoint")),
+                new Uri(Environment.GetEnvironmentVariable("BlobStorage__accountEndpoint")),
                 new DefaultAzureCredential()
             );
         });
         services.AddSingleton<AzureOpenAIClient>(serviceProvider =>
         {
             return new AzureOpenAIClient(
-                new Uri(Environment.GetEnvironmentVariable("AzureAi_accountEndpoint")),
+                new Uri(Environment.GetEnvironmentVariable("AzureAi__accountEndpoint")),
                 new DefaultAzureCredential()
             );
         });
