@@ -58,8 +58,7 @@ For local (and cloud deployment), will want to ensure that these properties are 
     "BlobStorage__container":"<Container>",
     "AzureAi__accountEndpoint": "https://<AiServiceUri>.openai.azure.com/",
     "AzureAi__textDeployment": "<TextDeploymentName>",
-    "AzureAi__imageDeployment":"<ImageDeploymentName>",
-    "CosmosDbFullConnectionURL": "AccountEndpoint=https://<CosmosDbAccount>:443/;AccountKey=<SomeKey>"
+    "AzureAi__imageDeployment":"<ImageDeploymentName>"
   }
 }
 ```
