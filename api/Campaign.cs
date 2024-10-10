@@ -44,7 +44,7 @@ namespace CampaignCopilot
             string campaignId = req.Query["campaignId"].ToString();
 
 
-                Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
+                Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDB__database"), CosmosContainer);
                 try
                 {
 
@@ -77,7 +77,7 @@ namespace CampaignCopilot
             };
 
             // Save the campaign to the Cosmos DB container
-            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer);
+            Container cosmosContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDB__database"), CosmosContainer);
             ItemResponse<CampaignObject> response = await cosmosContainer.CreateItemAsync(newCampaign, new PartitionKey(newCampaign.id));
 
             return new OkObjectResult(response.Resource);

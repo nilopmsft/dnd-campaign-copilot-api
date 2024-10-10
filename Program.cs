@@ -15,21 +15,21 @@ var host = new HostBuilder()
         services.AddSingleton<CosmosClient>(serviceProvider =>
         {
             return new CosmosClient(
-                Environment.GetEnvironmentVariable("CosmosDbUri"),
+                Environment.GetEnvironmentVariable("CosmosDB__accountEndpoint"),
                 new DefaultAzureCredential()
             );
         });
         services.AddSingleton<BlobServiceClient>(_ =>
         {
             return new BlobServiceClient(
-                new Uri(Environment.GetEnvironmentVariable("BlobStorageUri")),
+                new Uri(Environment.GetEnvironmentVariable("BlobStorage_accountEndpoint")),
                 new DefaultAzureCredential()
             );
         });
         services.AddSingleton<AzureOpenAIClient>(serviceProvider =>
         {
             return new AzureOpenAIClient(
-                new Uri(Environment.GetEnvironmentVariable("AzureAiUri")),
+                new Uri(Environment.GetEnvironmentVariable("AzureAi_accountEndpoint")),
                 new DefaultAzureCredential()
             );
         });

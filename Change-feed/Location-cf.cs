@@ -17,7 +17,6 @@ namespace CampaignCopilot
         public async Task Run([CosmosDBTrigger(
           databaseName: "dnd",
           containerName: "Locations",
-          Connection = "CosmosDbFullConnectionURL",
           LeaseContainerName = "Leases",
           CreateLeaseContainerIfNotExists = true,
           LeaseContainerPrefix = "locationsCFP_",
@@ -46,7 +45,7 @@ namespace CampaignCopilot
                         imageUrl = locationObject.imageUrl
                     };
 
-                    ItemResponse<CampaignObject> response = await _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDbDatabase"), CosmosContainer).PatchItemAsync<CampaignObject>(
+                    ItemResponse<CampaignObject> response = await _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("CosmosDB__database"), CosmosContainer).PatchItemAsync<CampaignObject>(
                         id: campaignId,
                         partitionKey: new PartitionKey(campaignId),
                         patchOperations: [
