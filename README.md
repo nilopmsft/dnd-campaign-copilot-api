@@ -1,7 +1,6 @@
 # D&D CampAIgn Copilot
 
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnilopmsft%2Fdnd-campaign-copilot-api%2Frefs%2Fheads%2F32-deploy-button%2Fazuredeploy.json)
 
 This project started as an openhack to learn Azure Cosmos DB and Azure OpenAI services and their respective configurations. We are using the various LLM capabilities in Azure OpenAI to help us create a campaign for Dungeons and Dragons with all details, images and storing details in Cosmos for retention. At the end it could assist a Dungeon Master to take a campaign to a group and begin their quest.
 
@@ -36,6 +35,9 @@ We chose to use a shared provisioned resources due to traffice levels (i.e. RU's
 ## App Configuration
 
 ### Authentication
+
+ClICK BELOW to create all the Azure Infrastructure needed to run the Notebooks (Azure AI Search, Cognitive Services, etc):
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnilopmsft%2Fdnd-campaign-copilot-api%2Frefs%2Fheads%2F32-deploy-button%2Fazuredeploy.json)
 
 For security purposes, we use Managed Identities to authenticate against the various services (Cosmos, Blob Storage, Azure AI). For local development you can utilize your own login to test.
 Review [here](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/local-development-dev-accounts?tabs=azure-portal%2Csign-in-visual-studio%2Ccommand-line#3---sign-in-to-azure-using-developer-tooling) for your dev environment. For a deployed Function App, you can utilize System Assigned or User Assigned Managed Identities, both having their own benefits. The permissions needed for both user/group and Managed Identity authentication of services are
