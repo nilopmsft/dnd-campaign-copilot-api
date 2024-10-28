@@ -37,6 +37,8 @@ We chose to use a shared provisioned resources due to traffice levels (i.e. RU's
 ### Authentication
 
 ClICK BELOW to create all the Azure Infrastructure needed to run the Notebooks (Azure AI Search, Cognitive Services, etc):
+
+
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnilopmsft%2Fdnd-campaign-copilot-api%2Frefs%2Fheads%2F32-deploy-button%2Fazuredeploy.json)
 
 For security purposes, we use Managed Identities to authenticate against the various services (Cosmos, Blob Storage, Azure AI). For local development you can utilize your own login to test.
