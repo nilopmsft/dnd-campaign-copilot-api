@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "sites_fapp_dev_dndcopilot_name": {
+        "Website Name": {
             "defaultValue": "fapp-dev-dndcopilot",
             "type": "String"
         },
@@ -18,11 +18,11 @@
             "defaultValue": "ASP-rgdevdndcopilot-a289",
             "type": "String"
         },
-        "storageAccounts_storagedevdndcopilot_name": {
+        "Storage Account": {
             "defaultValue": "storagedndcampgcopilot",
             "type": "String"
         },
-        "databaseAccounts_codb_dev_dndcopilot_name": {
+        "Comos Account": {
             "defaultValue": "codb-dev-dndcopilot",
             "type": "String"
         },
@@ -43,7 +43,7 @@
             "type": "String"
         },
         "workspaces_DefaultWorkspace_666febc5_f7e8_41c7_9ed6_1373d013049c_EUS2_externalid": {
-            "defaultValue": "/subscriptions/d63346b9-879c-416c-a958-1154cbb99706/resourceGroups/DefaultResourceGroup-EUS2/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-666febc5-f7e8-41c7-9ed6-1373d013049c-EUS2",
+            "defaultValue": "/subscriptions/d63346b9-879c-416c-a958-1154cbb99706/*  *//resourceGroups/DefaultResourceGroup-EUS2/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-666febc5-f7e8-41c7-9ed6-1373d013049c-EUS2",
             "type": "String"
         }
     },
@@ -66,7 +66,7 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "apiVersion": "2024-05-15",
-            "name": "[parameters('databaseAccounts_codb_dev_dndcopilot_name')]",
+            "name": "[parameters('Comos Account')]",
             "location": "East US 2",
             "tags": {
                 "Environment": "Development",
@@ -189,7 +189,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2023-05-01",
-            "name": "[parameters('storageAccounts_storagedevdndcopilot_name')]",
+            "name": "[parameters('Storage Account')]",
             "location": "eastus2",
             "tags": {
                 "Environment": "Development"
@@ -306,9 +306,9 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -319,15 +319,15 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/00000000-0000-0000-0000-000000000001')]",
+            "name": "[concat(parameters('Comos Account'), '/00000000-0000-0000-0000-000000000001')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "roleName": "Cosmos DB Built-in Data Reader",
                 "type": "BuiltInRole",
                 "assignableScopes": [
-                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
                 ],
                 "permissions": [
                     {
@@ -345,15 +345,15 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/00000000-0000-0000-0000-000000000002')]",
+            "name": "[concat(parameters('Comos Account'), '/00000000-0000-0000-0000-000000000002')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "roleName": "Cosmos DB Built-in Data Contributor",
                 "type": "BuiltInRole",
                 "assignableScopes": [
-                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
                 ],
                 "permissions": [
                     {
@@ -373,10 +373,10 @@
             "name": "[parameters('systemTopics_storagedevdndcopilot_17a6b2a6_26f2_4591_9263_1cfec0312b01_name')]",
             "location": "eastus2",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
-                "source": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]",
+                "source": "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
                 "topicType": "microsoft.storage.storageaccounts"
             }
         },
@@ -795,9 +795,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default')]",
+            "name": "[concat(parameters('Storage Account'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -847,9 +847,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default')]",
+            "name": "[concat(parameters('Storage Account'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -896,9 +896,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/queueServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default')]",
+            "name": "[concat(parameters('Storage Account'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "cors": {
@@ -909,9 +909,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/tableServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default')]",
+            "name": "[concat(parameters('Storage Account'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "cors": {
@@ -922,7 +922,7 @@
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2023-12-01",
-            "name": "[parameters('sites_fapp_dev_dndcopilot_name')]",
+            "name": "[parameters('Website Name')]",
             "location": "East US 2",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_rgdevdndcopilot_a289_name'))]"
@@ -944,12 +944,12 @@
                 "enabled": true,
                 "hostNameSslStates": [
                     {
-                        "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '.azurewebsites.net')]",
+                        "name": "[concat(parameters('Website Name'), '.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Standard"
                     },
                     {
-                        "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '.scm.azurewebsites.net')]",
+                        "name": "[concat(parameters('Website Name'), '.scm.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Repository"
                     }
@@ -990,10 +990,10 @@
         {
             "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/ftp')]",
+            "name": "[concat(parameters('Website Name'), '/ftp')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "tags": {
                 "Environment": "Development",
@@ -1008,10 +1008,10 @@
         {
             "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/scm')]",
+            "name": "[concat(parameters('Website Name'), '/scm')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "tags": {
                 "Environment": "Development",
@@ -1026,10 +1026,10 @@
         {
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/web')]",
+            "name": "[concat(parameters('Website Name'), '/web')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "tags": {
                 "Environment": "Development",
@@ -1119,10 +1119,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/Campaign')]",
+            "name": "[concat(parameters('Website Name'), '/Campaign')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1160,10 +1160,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/Character')]",
+            "name": "[concat(parameters('Website Name'), '/Character')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1201,10 +1201,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/CharacterChangeFeedProcessor')]",
+            "name": "[concat(parameters('Website Name'), '/CharacterChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1238,10 +1238,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/Locale')]",
+            "name": "[concat(parameters('Website Name'), '/Locale')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1279,10 +1279,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/LocaleChangeFeedProcessor')]",
+            "name": "[concat(parameters('Website Name'), '/LocaleChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1316,10 +1316,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/Location')]",
+            "name": "[concat(parameters('Website Name'), '/Location')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1357,10 +1357,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/LocationChangeFeedProcessor')]",
+            "name": "[concat(parameters('Website Name'), '/LocationChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1394,10 +1394,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/World')]",
+            "name": "[concat(parameters('Website Name'), '/World')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1435,10 +1435,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/WorldChangeFeedProcessor')]",
+            "name": "[concat(parameters('Website Name'), '/WorldChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1472,10 +1472,10 @@
         {
             "type": "Microsoft.Web/sites/hostNameBindings",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('sites_fapp_dev_dndcopilot_name'), '/', parameters('sites_fapp_dev_dndcopilot_name'), '.azurewebsites.net')]",
+            "name": "[concat(parameters('Website Name'), '/', parameters('Website Name'), '.azurewebsites.net')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
             ],
             "properties": {
                 "siteName": "fapp-dev-dndcopilot",
@@ -1485,10 +1485,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd/Campaigns')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd/Campaigns')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_codb_dev_dndcopilot_name'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1528,10 +1528,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd/Characters')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd/Characters')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_codb_dev_dndcopilot_name'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1571,10 +1571,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd/Leases')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd/Leases')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_codb_dev_dndcopilot_name'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1614,10 +1614,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd/Locales')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd/Locales')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_codb_dev_dndcopilot_name'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1657,10 +1657,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd/Locations')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd/Locations')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_codb_dev_dndcopilot_name'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1700,10 +1700,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd/Worlds')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd/Worlds')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_codb_dev_dndcopilot_name'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1743,10 +1743,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/throughputSettings",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/dnd/default')]",
+            "name": "[concat(parameters('Comos Account'), '/dnd/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_codb_dev_dndcopilot_name'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1757,29 +1757,29 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/f6091ad1-5970-48aa-ac99-64c723a5a554')]",
+            "name": "[concat(parameters('Comos Account'), '/f6091ad1-5970-48aa-ac99-64c723a5a554')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('databaseAccounts_codb_dev_dndcopilot_name'), '00000000-0000-0000-0000-000000000002')]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]"
             ],
             "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('databaseAccounts_codb_dev_dndcopilot_name'), '00000000-0000-0000-0000-000000000002')]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]",
                 "principalId": "b3bf5788-b5b6-4781-883c-4a9d8edc3db4",
-                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             }
         },
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('databaseAccounts_codb_dev_dndcopilot_name'), '/fe1558b8-c9d3-4ec5-a955-65802d6831ed')]",
+            "name": "[concat(parameters('Comos Account'), '/fe1558b8-c9d3-4ec5-a955-65802d6831ed')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('databaseAccounts_codb_dev_dndcopilot_name'), '00000000-0000-0000-0000-000000000002')]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]"
             ],
             "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('databaseAccounts_codb_dev_dndcopilot_name'), '00000000-0000-0000-0000-000000000002')]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]",
                 "principalId": "9a04f3e4-70d0-4dd2-98f7-c625e471ed52",
-                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_codb_dev_dndcopilot_name'))]"
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
             }
         },
         {
@@ -1863,10 +1863,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default/azure-webjobs-hosts')]",
+            "name": "[concat(parameters('Storage Account'), '/default/azure-webjobs-hosts')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_storagedevdndcopilot_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1880,10 +1880,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default/azure-webjobs-secrets')]",
+            "name": "[concat(parameters('Storage Account'), '/default/azure-webjobs-secrets')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_storagedevdndcopilot_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1897,10 +1897,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default/github-actions-deploy')]",
+            "name": "[concat(parameters('Storage Account'), '/default/github-actions-deploy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_storagedevdndcopilot_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1914,10 +1914,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default/images')]",
+            "name": "[concat(parameters('Storage Account'), '/default/images')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_storagedevdndcopilot_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1931,10 +1931,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default/scm-releases')]",
+            "name": "[concat(parameters('Storage Account'), '/default/scm-releases')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_storagedevdndcopilot_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1948,10 +1948,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default/fapp-dev-dndcopilot9871')]",
+            "name": "[concat(parameters('Storage Account'), '/default/fapp-dev-dndcopilot9871')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccounts_storagedevdndcopilot_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('Storage Account'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "accessTier": "TransactionOptimized",
@@ -1962,10 +1962,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('storageAccounts_storagedevdndcopilot_name'), '/default/fapp-dev-dndcopilota074')]",
+            "name": "[concat(parameters('Storage Account'), '/default/fapp-dev-dndcopilota074')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccounts_storagedevdndcopilot_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('Storage Account'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
             "properties": {
                 "accessTier": "TransactionOptimized",
@@ -1979,7 +1979,7 @@
             "name": "[parameters('workspaces_aist_dev_dndcopilot_name')]",
             "location": "swedencentral",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_aistdevdndcopi3356075243_name'))]",
                 "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
             ],
@@ -1998,7 +1998,7 @@
             },
             "properties": {
                 "friendlyName": "Ai Studio DnD Copilot",
-                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagedevdndcopilot_name'))]",
+                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
                 "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_aistdevdndcopi3356075243_name'))]",
                 "applicationInsights": "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]",
                 "hbiWorkspace": false,
