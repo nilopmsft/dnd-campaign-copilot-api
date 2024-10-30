@@ -6,11 +6,11 @@
             "defaultValue": "fapp-dev-dndcopilot",
             "type": "String"
         },
-        "components_fapp_dev_dndcopilot_name": {
+        "Component Name": {
             "defaultValue": "fapp-dev-dndcopilot",
             "type": "String"
         },
-        "vaults_aistdevdndcopi3356075243_name": {
+        "Key Vault Name": {
             "defaultValue": "aistdevdndcopi3356075243",
             "type": "String"
         },
@@ -22,28 +22,28 @@
             "defaultValue": "storagedndcampgcopilot",
             "type": "String"
         },
-        "Comos Account": {
+        "Cosmos Account": {
             "defaultValue": "codb-dev-dndcopilot",
             "type": "String"
         },
-        "accounts_aistdevdndcopi2718659313_name": {
+        "AI Services": {
             "defaultValue": "aistdevdndcopi27186593132",
             "type": "String"
         },
-        "workspaces_aist_dev_dndcopilot_name": {
+        "Workspace Connections": {
             "defaultValue": "aist-dev-dndcopilot",
             "type": "String"
         },
-        "userAssignedIdentities_mi_dev_dndcopilot_name": {
+        "User Assigned Identity ": {
             "defaultValue": "mi-dev-dndcopilot",
             "type": "String"
         },
-        "systemTopics_storagedevdndcopilot_17a6b2a6_26f2_4591_9263_1cfec0312b01_name": {
+        "Event Grid": {
             "defaultValue": "storagedevdndcopilot-17a6b2a6-26f2-4591-9263-1cfec0312b01",
             "type": "String"
         },
-        "workspaces_DefaultWorkspace_666febc5_f7e8_41c7_9ed6_1373d013049c_EUS2_externalid": {
-            "defaultValue": "/subscriptions/d63346b9-879c-416c-a958-1154cbb99706/*  *//resourceGroups/DefaultResourceGroup-EUS2/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-666febc5-f7e8-41c7-9ed6-1373d013049c-EUS2",
+        "Workspace Resource ID": {
+            "defaultValue": "null",
             "type": "String"
         }
     },
@@ -52,21 +52,21 @@
         {
             "type": "Microsoft.CognitiveServices/accounts",
             "apiVersion": "2024-06-01-preview",
-            "name": "[parameters('accounts_aistdevdndcopi2718659313_name')]",
+            "name": "[parameters('AI Services')]",
             "location": "swedencentral",
             "sku": {
                 "name": "S0"
             },
             "kind": "AIServices",
             "properties": {
-                "customSubDomainName": "[parameters('accounts_aistdevdndcopi2718659313_name')]",
+                "customSubDomainName": "[parameters('AI Services')]",
                 "publicNetworkAccess": "Enabled"
             }
         },
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "apiVersion": "2024-05-15",
-            "name": "[parameters('Comos Account')]",
+            "name": "[parameters('Cosmos Account')]",
             "location": "East US 2",
             "tags": {
                 "Environment": "Development",
@@ -124,8 +124,8 @@
         {
             "type": "microsoft.insights/components",
             "apiVersion": "2020-02-02",
-            "name": "[parameters('components_fapp_dev_dndcopilot_name')]",
-            "location": "eastus2",
+            "name": "[parameters('Component Name')]",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "Environment": "Development"
             },
@@ -135,7 +135,7 @@
                 "Flow_Type": "Redfield",
                 "Request_Source": "IbizaWebAppExtensionCreate",
                 "RetentionInDays": 90,
-                "WorkspaceResourceId": "[parameters('workspaces_DefaultWorkspace_666febc5_f7e8_41c7_9ed6_1373d013049c_EUS2_externalid')]",
+                "WorkspaceResourceId": "[parameters('Workspace Resource ID')]",
                 "IngestionMode": "LogAnalytics",
                 "publicNetworkAccessForIngestion": "Enabled",
                 "publicNetworkAccessForQuery": "Enabled"
@@ -144,7 +144,7 @@
         {
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2024-04-01-preview",
-            "name": "[parameters('vaults_aistdevdndcopi3356075243_name')]",
+            "name": "[parameters('Key Vault Name')]",
             "location": "swedencentral",
             "tags": {
                 "Environment": "Development"
@@ -175,7 +175,7 @@
                 ],
                 "enabledForDeployment": false,
                 "enableSoftDelete": true,
-                "vaultUri": "[concat('https://', parameters('vaults_aistdevdndcopi3356075243_name'), '.vault.azure.net/')]",
+                "vaultUri": "[concat('https://', parameters('Key Vault Name'), '.vault.azure.net/')]",
                 "provisioningState": "Succeeded",
                 "publicNetworkAccess": "Enabled"
             }
@@ -183,14 +183,14 @@
         {
             "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
             "apiVersion": "2023-07-31-preview",
-            "name": "[parameters('userAssignedIdentities_mi_dev_dndcopilot_name')]",
-            "location": "eastus2"
+            "name": "[parameters('User Assigned Identity ')]",
+            "location": "[resourceGroup().location]"
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2023-05-01",
             "name": "[parameters('Storage Account')]",
-            "location": "eastus2",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "Environment": "Development"
             },
@@ -271,9 +271,9 @@
         {
             "type": "Microsoft.CognitiveServices/accounts/defenderForAISettings",
             "apiVersion": "2024-06-01-preview",
-            "name": "[concat(parameters('accounts_aistdevdndcopi2718659313_name'), '/Default')]",
+            "name": "[concat(parameters('AI Services'), '/Default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_aistdevdndcopi2718659313_name'))]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
             ],
             "properties": {
                 "state": "Disabled"
@@ -282,9 +282,9 @@
         {
             "type": "Microsoft.CognitiveServices/accounts/deployments",
             "apiVersion": "2024-06-01-preview",
-            "name": "[concat(parameters('accounts_aistdevdndcopi2718659313_name'), '/gpt-4o-2024-08-06')]",
+            "name": "[concat(parameters('AI Services'), '/gpt-4o-2024-08-06')]",
             "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_aistdevdndcopi2718659313_name'))]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
             ],
             "sku": {
                 "name": "GlobalStandard",
@@ -306,9 +306,9 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -319,15 +319,15 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/00000000-0000-0000-0000-000000000001')]",
+            "name": "[concat(parameters('Cosmos Account'), '/00000000-0000-0000-0000-000000000001')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "roleName": "Cosmos DB Built-in Data Reader",
                 "type": "BuiltInRole",
                 "assignableScopes": [
-                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
                 ],
                 "permissions": [
                     {
@@ -345,15 +345,15 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/00000000-0000-0000-0000-000000000002')]",
+            "name": "[concat(parameters('Cosmos Account'), '/00000000-0000-0000-0000-000000000002')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "roleName": "Cosmos DB Built-in Data Contributor",
                 "type": "BuiltInRole",
                 "assignableScopes": [
-                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
                 ],
                 "permissions": [
                     {
@@ -370,8 +370,8 @@
         {
             "type": "Microsoft.EventGrid/systemTopics",
             "apiVersion": "2024-06-01-preview",
-            "name": "[parameters('systemTopics_storagedevdndcopilot_17a6b2a6_26f2_4591_9263_1cfec0312b01_name')]",
-            "location": "eastus2",
+            "name": "[parameters('Event Grid')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
             ],
@@ -383,9 +383,9 @@
         {
             "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
             "apiVersion": "2024-06-01-preview",
-            "name": "[concat(parameters('systemTopics_storagedevdndcopilot_17a6b2a6_26f2_4591_9263_1cfec0312b01_name'), '/StorageAntimalwareSubscription')]",
+            "name": "[concat(parameters('Event Grid'), '/StorageAntimalwareSubscription')]",
             "dependsOn": [
-                "[resourceId('Microsoft.EventGrid/systemTopics', parameters('systemTopics_storagedevdndcopilot_17a6b2a6_26f2_4591_9263_1cfec0312b01_name'))]"
+                "[resourceId('Microsoft.EventGrid/systemTopics', parameters('Event Grid'))]"
             ],
             "properties": {
                 "destination": {
@@ -421,10 +421,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/degradationindependencyduration')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/degradationindependencyduration')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -445,10 +445,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/degradationinserverresponsetime')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/degradationinserverresponsetime')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -469,10 +469,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/digestMailConfiguration')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/digestMailConfiguration')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -493,10 +493,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/extension_billingdatavolumedailyspikeextension')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/extension_billingdatavolumedailyspikeextension')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -517,10 +517,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/extension_canaryextension')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/extension_canaryextension')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -541,10 +541,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/extension_exceptionchangeextension')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/extension_exceptionchangeextension')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -565,10 +565,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/extension_memoryleakextension')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/extension_memoryleakextension')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -589,10 +589,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/extension_securityextensionspackage')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/extension_securityextensionspackage')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -613,10 +613,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/extension_traceseveritydetector')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/extension_traceseveritydetector')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -637,10 +637,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/longdependencyduration')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/longdependencyduration')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -661,10 +661,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/migrationToAlertRulesCompleted')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/migrationToAlertRulesCompleted')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -685,10 +685,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/slowpageloadtime')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/slowpageloadtime')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -709,10 +709,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_fapp_dev_dndcopilot_name'), '/slowserverresponsetime')]",
-            "location": "eastus2",
+            "name": "[concat(parameters('Component Name'), '/slowserverresponsetime')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -733,10 +733,10 @@
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2024-04-01-preview",
-            "name": "[concat(parameters('vaults_aistdevdndcopi3356075243_name'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313')]",
+            "name": "[concat(parameters('Key Vault Name'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313')]",
             "location": "swedencentral",
             "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_aistdevdndcopi3356075243_name'))]"
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]"
             ],
             "properties": {
                 "contentType": "application/NotProvided",
@@ -749,10 +749,10 @@
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2024-04-01-preview",
-            "name": "[concat(parameters('vaults_aistdevdndcopi3356075243_name'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313aoai')]",
+            "name": "[concat(parameters('Key Vault Name'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313aoai')]",
             "location": "swedencentral",
             "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_aistdevdndcopi3356075243_name'))]"
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]"
             ],
             "properties": {
                 "contentType": "application/NotProvided",
@@ -765,9 +765,9 @@
         {
             "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
             "apiVersion": "2023-07-31-preview",
-            "name": "[concat(parameters('userAssignedIdentities_mi_dev_dndcopilot_name'), '/nilopmsft-dnd-campaign-copilot-api-9712')]",
+            "name": "[concat(parameters('User Assigned Identity '), '/nilopmsft-dnd-campaign-copilot-api-9712')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentities_mi_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('User Assigned Identity '))]"
             ],
             "properties": {
                 "issuer": "https://token.actions.githubusercontent.com",
@@ -780,9 +780,9 @@
         {
             "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
             "apiVersion": "2023-07-31-preview",
-            "name": "[concat(parameters('userAssignedIdentities_mi_dev_dndcopilot_name'), '/nilopmsft-dnd-campaign-copilot-api-a361')]",
+            "name": "[concat(parameters('User Assigned Identity '), '/nilopmsft-dnd-campaign-copilot-api-a361')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentities_mi_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('User Assigned Identity '))]"
             ],
             "properties": {
                 "issuer": "https://token.actions.githubusercontent.com",
@@ -931,7 +931,7 @@
                 "Environment": "Development",
                 "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
-                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
+                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
             "kind": "functionapp,linux",
             "identity": {
@@ -999,7 +999,7 @@
                 "Environment": "Development",
                 "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
-                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
+                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
             "properties": {
                 "allow": false
@@ -1017,7 +1017,7 @@
                 "Environment": "Development",
                 "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
-                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
+                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
             "properties": {
                 "allow": false
@@ -1035,7 +1035,7 @@
                 "Environment": "Development",
                 "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
-                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
+                "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
             "properties": {
                 "numberOfWorkers": 1,
@@ -1485,10 +1485,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd/Campaigns')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd/Campaigns')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1528,10 +1528,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd/Characters')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd/Characters')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1571,10 +1571,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd/Leases')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd/Leases')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1614,10 +1614,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd/Locales')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd/Locales')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1657,10 +1657,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd/Locations')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd/Locations')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1700,10 +1700,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd/Worlds')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd/Worlds')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1743,10 +1743,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/throughputSettings",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/dnd/default')]",
+            "name": "[concat(parameters('Cosmos Account'), '/dnd/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Comos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             ],
             "properties": {
                 "resource": {
@@ -1757,38 +1757,38 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/f6091ad1-5970-48aa-ac99-64c723a5a554')]",
+            "name": "[concat(parameters('Cosmos Account'), '/f6091ad1-5970-48aa-ac99-64c723a5a554')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]"
             ],
             "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]",
                 "principalId": "b3bf5788-b5b6-4781-883c-4a9d8edc3db4",
-                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             }
         },
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Comos Account'), '/fe1558b8-c9d3-4ec5-a955-65802d6831ed')]",
+            "name": "[concat(parameters('Cosmos Account'), '/fe1558b8-c9d3-4ec5-a955-65802d6831ed')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]"
             ],
             "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Comos Account'), '00000000-0000-0000-0000-000000000002')]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]",
                 "principalId": "9a04f3e4-70d0-4dd2-98f7-c625e471ed52",
-                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Comos Account'))]"
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             }
         },
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('workspaces_aist_dev_dndcopilot_name'), '/aistdevdndcopi2718659313')]",
+            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaces_aist_dev_dndcopilot_name'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_aistdevdndcopi2718659313_name'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
             ],
             "properties": {
                 "authType": "ApiKey",
@@ -1801,7 +1801,7 @@
                 "peStatus": "NotApplicable",
                 "metadata": {
                     "ApiType": "Azure",
-                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_aistdevdndcopi2718659313_name'))]",
+                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]",
                     "ApiVersion": "2023-07-01-preview",
                     "DeploymentApiVersion": "2023-10-01-preview"
                 }
@@ -1810,10 +1810,10 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('workspaces_aist_dev_dndcopilot_name'), '/aistdevdndcopi2718659313_aoai')]",
+            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313_aoai')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaces_aist_dev_dndcopilot_name'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_aistdevdndcopi2718659313_name'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
             ],
             "properties": {
                 "authType": "ApiKey",
@@ -1826,7 +1826,7 @@
                 "peStatus": "NotApplicable",
                 "metadata": {
                     "ApiType": "Azure",
-                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_aistdevdndcopi2718659313_name'))]",
+                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]",
                     "ApiVersion": "2023-07-01-preview",
                     "DeploymentApiVersion": "2023-10-01-preview"
                 }
@@ -1835,10 +1835,10 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections/deployments",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('workspaces_aist_dev_dndcopilot_name'), '/aistdevdndcopi2718659313_aoai/dall-e-3')]",
+            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313_aoai/dall-e-3')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', parameters('workspaces_aist_dev_dndcopilot_name'), 'aistdevdndcopi2718659313_aoai')]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaces_aist_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', parameters('Workspace Connections'), 'aistdevdndcopi2718659313_aoai')]",
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]"
             ],
             "sku": {
                 "name": "Standard",
@@ -1849,10 +1849,10 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections/deployments",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('workspaces_aist_dev_dndcopilot_name'), '/aistdevdndcopi2718659313_aoai/gpt-4o-2024-08-06')]",
+            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313_aoai/gpt-4o-2024-08-06')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', parameters('workspaces_aist_dev_dndcopilot_name'), 'aistdevdndcopi2718659313_aoai')]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaces_aist_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', parameters('Workspace Connections'), 'aistdevdndcopi2718659313_aoai')]",
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]"
             ],
             "sku": {
                 "name": "GlobalStandard",
@@ -1976,12 +1976,12 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces",
             "apiVersion": "2024-07-01-preview",
-            "name": "[parameters('workspaces_aist_dev_dndcopilot_name')]",
+            "name": "[parameters('Workspace Connections')]",
             "location": "swedencentral",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_aistdevdndcopi3356075243_name'))]",
-                "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]"
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]",
+                "[resourceId('microsoft.insights/components', parameters('Component Name'))]"
             ],
             "tags": {
                 "Environment": "Development",
@@ -1999,8 +1999,8 @@
             "properties": {
                 "friendlyName": "Ai Studio DnD Copilot",
                 "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
-                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_aistdevdndcopi3356075243_name'))]",
-                "applicationInsights": "[resourceId('microsoft.insights/components', parameters('components_fapp_dev_dndcopilot_name'))]",
+                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]",
+                "applicationInsights": "[resourceId('microsoft.insights/components', parameters('Component Name'))]",
                 "hbiWorkspace": false,
                 "managedNetwork": {
                     "isolationMode": "Disabled"
