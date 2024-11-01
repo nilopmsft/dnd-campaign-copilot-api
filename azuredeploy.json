@@ -7,15 +7,15 @@
             "type": "String"
         },
         "Component Name": {
-            "defaultValue": "fapp-dev-dndcopilot",
+            "defaultValue": "capp-dev-dndcopilot",
             "type": "String"
         },
         "Key Vault Name": {
-            "defaultValue": "aistdevdndcopi3356075243",
+            "defaultValue": "keyvaultdnd",
             "type": "String"
         },
-        "serverfarms_ASP_rgdevdndcopilot_a289_name": {
-            "defaultValue": "ASP-rgdevdndcopilot-a289",
+        "Server Farm ASP": {
+            "defaultValue": "ASP-rgdevdndcopilot",
             "type": "String"
         },
         "Storage Account": {
@@ -27,19 +27,19 @@
             "type": "String"
         },
         "AI Services": {
-            "defaultValue": "aistdevdndcopi27186593132",
+            "defaultValue": "aistdevdndcopi",
             "type": "String"
         },
         "Workspace Connections": {
             "defaultValue": "aist-dev-dndcopilot",
             "type": "String"
         },
-        "User Assigned Identity ": {
+        "User Assigned Identity": {
             "defaultValue": "mi-dev-dndcopilot",
             "type": "String"
         },
         "Event Grid": {
-            "defaultValue": "storagedevdndcopilot-17a6b2a6-26f2-4591-9263-1cfec0312b01",
+            "defaultValue": "storagedevdndcopilot",
             "type": "String"
         },
         "Workspace Resource ID": {
@@ -47,26 +47,38 @@
             "type": "String"
         }
     },
-    "variables": {},
+    "variables": {
+    "uniqueWebsiteName": "[concat(parameters('Website Name'), uniqueString(resourceGroup().id))]",
+    "uniqueStorageName": "[concat(parameters('Storage Account'), uniqueString(resourceGroup().id))]",
+    "uniqueComponentName": "[concat(parameters('Component Name'), uniqueString(resourceGroup().id))]",
+    "uniqueKeyvaultName": "[concat(parameters('Key Vault Name'), uniqueString(resourceGroup().id))]",
+    "uniqueServerfarmName": "[concat(parameters('Server Farm ASP'), uniqueString(resourceGroup().id))]",
+    "uniqueCosmosName": "[concat(parameters('Cosmos Account'), uniqueString(resourceGroup().id))]",
+    "uniqueAIservicesName": "[concat(parameters('AI Services'), uniqueString(resourceGroup().id))]",
+    "uniqueWorkspaceconnectionName": "[concat(parameters('Workspace Connections'), uniqueString(resourceGroup().id))]",
+    "uniqueUserassignedName": "[concat(parameters('User Assigned Identity'), uniqueString(resourceGroup().id))]",
+    "uniqueEventGridName": "[concat(parameters('Event Grid'), uniqueString(resourceGroup().id))]"
+
+    },
     "resources": [
         {
             "type": "Microsoft.CognitiveServices/accounts",
             "apiVersion": "2024-06-01-preview",
-            "name": "[parameters('AI Services')]",
+            "name": "[variables('uniqueAIservicesName')]",
             "location": "swedencentral",
             "sku": {
                 "name": "S0"
             },
             "kind": "AIServices",
             "properties": {
-                "customSubDomainName": "[parameters('AI Services')]",
+                "customSubDomainName": "[variables('uniqueAIservicesName')]",
                 "publicNetworkAccess": "Enabled"
             }
         },
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "apiVersion": "2024-05-15",
-            "name": "[parameters('Cosmos Account')]",
+            "name": "[variables('uniqueCosmosName')]",
             "location": "East US 2",
             "tags": {
                 "Environment": "Development",
@@ -122,9 +134,29 @@
             }
         },
         {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[variables('uniqueComponentName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "Environment": "Development"
+            },
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "Flow_Type": "Redfield",
+                "Request_Source": "IbizaWebAppExtensionCreate",
+                "RetentionInDays": 90,
+                "WorkspaceResourceId": "[parameters('Workspace Resource ID')]",
+                "IngestionMode": "LogAnalytics",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+            }
+        },
+        {
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2024-04-01-preview",
-            "name": "[parameters('Key Vault Name')]",
+            "name": "[variables('uniqueKeyvaultName')]",
             "location": "swedencentral",
             "tags": {
                 "Environment": "Development"
@@ -155,7 +187,7 @@
                 ],
                 "enabledForDeployment": false,
                 "enableSoftDelete": true,
-                "vaultUri": "[concat('https://', parameters('Key Vault Name'), '.vault.azure.net/')]",
+                "vaultUri": "[concat('https://', variables('uniqueKeyvaultName'), '.vault.azure.net/')]",
                 "provisioningState": "Succeeded",
                 "publicNetworkAccess": "Enabled"
             }
@@ -163,13 +195,13 @@
         {
             "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
             "apiVersion": "2023-07-31-preview",
-            "name": "[parameters('User Assigned Identity ')]",
+            "name": "[variables('uniqueUserassignedName')]",
             "location": "[resourceGroup().location]"
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2023-05-01",
-            "name": "[parameters('Storage Account')]",
+            "name": "[variables('uniqueStorageName')]",
             "location": "[resourceGroup().location]",
             "tags": {
                 "Environment": "Development"
@@ -222,7 +254,7 @@
         {
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2023-12-01",
-            "name": "[parameters('serverfarms_ASP_rgdevdndcopilot_a289_name')]",
+            "name": "[variables('uniqueServerfarmName')]",
             "location": "East US 2",
             "tags": {
                 "Environment": "Development"
@@ -251,9 +283,9 @@
         {
             "type": "Microsoft.CognitiveServices/accounts/defenderForAISettings",
             "apiVersion": "2024-06-01-preview",
-            "name": "[concat(parameters('AI Services'), '/Default')]",
+            "name": "[concat(variables('uniqueAIservicesName'), '/Default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('uniqueAIservicesName'))]"
             ],
             "properties": {
                 "state": "Disabled"
@@ -262,9 +294,9 @@
         {
             "type": "Microsoft.CognitiveServices/accounts/deployments",
             "apiVersion": "2024-06-01-preview",
-            "name": "[concat(parameters('AI Services'), '/gpt-4o-2024-08-06')]",
+            "name": "[concat(variables('uniqueAIservicesName'), '/gpt-4o-2024-08-06')]",
             "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('uniqueAIservicesName'))]"
             ],
             "sku": {
                 "name": "GlobalStandard",
@@ -286,9 +318,9 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -299,15 +331,15 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/00000000-0000-0000-0000-000000000001')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/00000000-0000-0000-0000-000000000001')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "roleName": "Cosmos DB Built-in Data Reader",
                 "type": "BuiltInRole",
                 "assignableScopes": [
-                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
                 ],
                 "permissions": [
                     {
@@ -325,15 +357,15 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/00000000-0000-0000-0000-000000000002')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/00000000-0000-0000-0000-000000000002')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "roleName": "Cosmos DB Built-in Data Contributor",
                 "type": "BuiltInRole",
                 "assignableScopes": [
-                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
                 ],
                 "permissions": [
                     {
@@ -350,22 +382,22 @@
         {
             "type": "Microsoft.EventGrid/systemTopics",
             "apiVersion": "2024-06-01-preview",
-            "name": "[parameters('Event Grid')]",
+            "name": "[variables('uniqueEventGridName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
-                "source": "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
+                "source": "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]",
                 "topicType": "microsoft.storage.storageaccounts"
             }
         },
         {
             "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
             "apiVersion": "2024-06-01-preview",
-            "name": "[concat(parameters('Event Grid'), '/StorageAntimalwareSubscription')]",
+            "name": "[concat(variables('uniqueEventGridName'), '/StorageAntimalwareSubscription')]",
             "dependsOn": [
-                "[resourceId('Microsoft.EventGrid/systemTopics', parameters('Event Grid'))]"
+                "[resourceId('Microsoft.EventGrid/systemTopics', variables('uniqueEventGridName'))]"
             ],
             "properties": {
                 "destination": {
@@ -398,15 +430,325 @@
                 }
             }
         },
-        
-        
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/degradationindependencyduration')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "degradationindependencyduration",
+                    "DisplayName": "Degradation in dependency duration",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/degradationinserverresponsetime')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "degradationinserverresponsetime",
+                    "DisplayName": "Degradation in server response time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/digestMailConfiguration')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "digestMailConfiguration",
+                    "DisplayName": "Digest Mail Configuration",
+                    "Description": "This rule describes the digest mail preferences",
+                    "HelpUrl": "www.homail.com",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/extension_billingdatavolumedailyspikeextension')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_billingdatavolumedailyspikeextension",
+                    "DisplayName": "Abnormal rise in daily data volume (preview)",
+                    "Description": "This detection rule automatically analyzes the billing data generated by your application, and can warn you about an unusual increase in your application's billing costs",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/billing-data-volume-daily-spike.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/extension_canaryextension')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_canaryextension",
+                    "DisplayName": "Canary extension",
+                    "Description": "Canary extension",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/extension_exceptionchangeextension')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_exceptionchangeextension",
+                    "DisplayName": "Abnormal rise in exception volume (preview)",
+                    "Description": "This detection rule automatically analyzes the exceptions thrown in your application, and can warn you about unusual patterns in your exception telemetry.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/abnormal-rise-in-exception-volume.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/extension_memoryleakextension')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_memoryleakextension",
+                    "DisplayName": "Potential memory leak detected (preview)",
+                    "Description": "This detection rule automatically analyzes the memory consumption of each process in your application, and can warn you about potential memory leaks or increased memory consumption.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/memory-leak.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/extension_securityextensionspackage')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_securityextensionspackage",
+                    "DisplayName": "Potential security issue detected (preview)",
+                    "Description": "This detection rule automatically analyzes the telemetry generated by your application and detects potential security issues.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/application-security-detection-pack.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/extension_traceseveritydetector')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_traceseveritydetector",
+                    "DisplayName": "Degradation in trace severity ratio (preview)",
+                    "Description": "This detection rule automatically analyzes the trace logs emitted from your application, and can warn you about unusual patterns in the severity of your trace telemetry.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/degradation-in-trace-severity-ratio.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/longdependencyduration')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "longdependencyduration",
+                    "DisplayName": "Long dependency duration",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/migrationToAlertRulesCompleted')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "migrationToAlertRulesCompleted",
+                    "DisplayName": "Migration To Alert Rules Completed",
+                    "Description": "A configuration that controls the migration state of Smart Detection to Smart Alerts",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": false,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": false,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/slowpageloadtime')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "slowpageloadtime",
+                    "DisplayName": "Slow page load time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(variables('uniqueComponentName'), '/slowserverresponsetime')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "slowserverresponsetime",
+                    "DisplayName": "Slow server response time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2024-04-01-preview",
-            "name": "[concat(parameters('Key Vault Name'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313')]",
+            "name": "[concat(variables('uniqueKeyvaultName'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313')]",
             "location": "swedencentral",
             "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]"
+                "[resourceId('Microsoft.KeyVault/vaults', variables('uniqueKeyvaultName'))]"
             ],
             "properties": {
                 "contentType": "application/NotProvided",
@@ -419,10 +761,10 @@
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2024-04-01-preview",
-            "name": "[concat(parameters('Key Vault Name'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313aoai')]",
+            "name": "[concat(variables('uniqueKeyvaultName'), '/bea20dab-8f3e-466f-8e12-d938fe9b3b9a-aistdevdndcopi2718659313aoai')]",
             "location": "swedencentral",
             "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]"
+                "[resourceId('Microsoft.KeyVault/vaults', variables('uniqueKeyvaultName'))]"
             ],
             "properties": {
                 "contentType": "application/NotProvided",
@@ -435,9 +777,9 @@
         {
             "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
             "apiVersion": "2023-07-31-preview",
-            "name": "[concat(parameters('User Assigned Identity '), '/nilopmsft-dnd-campaign-copilot-api-9712')]",
+            "name": "[concat(variables('uniqueUserassignedName'), '/nilopmsft-dnd-campaign-copilot-api-9712')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('User Assigned Identity '))]"
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('uniqueUserassignedName'))]"
             ],
             "properties": {
                 "issuer": "https://token.actions.githubusercontent.com",
@@ -450,9 +792,9 @@
         {
             "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
             "apiVersion": "2023-07-31-preview",
-            "name": "[concat(parameters('User Assigned Identity '), '/nilopmsft-dnd-campaign-copilot-api-a361')]",
+            "name": "[concat(variables('uniqueUserassignedName'), '/nilopmsft-dnd-campaign-copilot-api-a361')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('User Assigned Identity '))]"
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('uniqueUserassignedName'))]"
             ],
             "properties": {
                 "issuer": "https://token.actions.githubusercontent.com",
@@ -465,9 +807,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -517,9 +859,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -566,9 +908,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/queueServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "cors": {
@@ -579,9 +921,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/tableServices",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "cors": {
@@ -592,13 +934,14 @@
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2023-12-01",
-            "name": "[parameters('Website Name')]",
+            "name": "[variables('uniqueWebsiteName')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_rgdevdndcopilot_a289_name'))]"
+                "[resourceId('Microsoft.Web/serverfarms', variables('uniqueServerfarmName'))]"
             ],
             "tags": {
                 "Environment": "Development",
+                "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
                 "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
@@ -613,17 +956,17 @@
                 "enabled": true,
                 "hostNameSslStates": [
                     {
-                        "name": "[concat(parameters('Website Name'), '.azurewebsites.net')]",
+                        "name": "[concat(variables('uniqueWebsiteName'), '.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Standard"
                     },
                     {
-                        "name": "[concat(parameters('Website Name'), '.scm.azurewebsites.net')]",
+                        "name": "[concat(variables('uniqueWebsiteName'), '.scm.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Repository"
                     }
                 ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_rgdevdndcopilot_a289_name'))]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueServerfarmName'))]",
                 "reserved": true,
                 "isXenon": false,
                 "hyperV": false,
@@ -659,13 +1002,14 @@
         {
             "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/ftp')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/ftp')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "tags": {
                 "Environment": "Development",
+                "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
                 "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
@@ -676,13 +1020,14 @@
         {
             "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/scm')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/scm')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "tags": {
                 "Environment": "Development",
+                "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
                 "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
@@ -693,13 +1038,14 @@
         {
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/web')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/web')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "tags": {
                 "Environment": "Development",
+                "hidden-link: /app-insights-resource-id": "/subscriptions/666febc5-f7e8-41c7-9ed6-1373d013049c/resourceGroups/rg-dev-dndcopilot/providers/microsoft.insights/components/fapp-dev-dndcopilot",
                 "hidden-link: /app-insights-instrumentation-key": "aed791d4-64ba-4115-8bd4-1346b982de90",
                 "hidden-link: /app-insights-conn-string": "InstrumentationKey=aed791d4-64ba-4115-8bd4-1346b982de90;IngestionEndpoint=https://[resourceGroup().location]-3.in.applicationinsights.azure.com/;LiveEndpoint=https://[resourceGroup().location].livediagnostics.monitor.azure.com/;ApplicationId=5d2f246f-bff9-460f-b119-c0971138d4c7"
             },
@@ -785,10 +1131,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/Campaign')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/Campaign')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -826,10 +1172,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/Character')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/Character')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -867,10 +1213,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/CharacterChangeFeedProcessor')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/CharacterChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -904,10 +1250,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/Locale')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/Locale')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -945,10 +1291,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/LocaleChangeFeedProcessor')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/LocaleChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -982,10 +1328,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/Location')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/Location')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1023,10 +1369,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/LocationChangeFeedProcessor')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/LocationChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1060,10 +1406,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/World')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/World')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1101,10 +1447,10 @@
         {
             "type": "Microsoft.Web/sites/functions",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/WorldChangeFeedProcessor')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/WorldChangeFeedProcessor')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "script_href": "https://fapp-dev-dndcopilot.azurewebsites.net/admin/vfs/home/site/wwwroot/dnd_campaign_api.dll",
@@ -1138,10 +1484,10 @@
         {
             "type": "Microsoft.Web/sites/hostNameBindings",
             "apiVersion": "2023-12-01",
-            "name": "[concat(parameters('Website Name'), '/', parameters('Website Name'), '.azurewebsites.net')]",
+            "name": "[concat(variables('uniqueWebsiteName'), '/', variables('uniqueWebsiteName'), '.azurewebsites.net')]",
             "location": "East US 2",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('Website Name'))]"
+                "[resourceId('Microsoft.Web/sites', variables('uniqueWebsiteName'))]"
             ],
             "properties": {
                 "siteName": "fapp-dev-dndcopilot",
@@ -1151,10 +1497,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd/Campaigns')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd/Campaigns')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('uniqueCosmosName'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -1194,10 +1540,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd/Characters')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd/Characters')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('uniqueCosmosName'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -1237,10 +1583,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd/Leases')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd/Leases')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('uniqueCosmosName'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -1280,10 +1626,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd/Locales')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd/Locales')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('uniqueCosmosName'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -1323,10 +1669,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd/Locations')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd/Locations')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('uniqueCosmosName'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -1366,10 +1712,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd/Worlds')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd/Worlds')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('uniqueCosmosName'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -1409,10 +1755,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/throughputSettings",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/dnd/default')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/dnd/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('Cosmos Account'), 'dnd')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('uniqueCosmosName'), 'dnd')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             ],
             "properties": {
                 "resource": {
@@ -1423,27 +1769,27 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/f6091ad1-5970-48aa-ac99-64c723a5a554')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/f6091ad1-5970-48aa-ac99-64c723a5a554')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', variables('uniqueCosmosName'), '00000000-0000-0000-0000-000000000002')]"
             ],
             "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', variables('uniqueCosmosName'), '00000000-0000-0000-0000-000000000002')]",
                 "principalId": "b3bf5788-b5b6-4781-883c-4a9d8edc3db4",
-                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]"
             }
         },
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
             "apiVersion": "2024-05-15",
-            "name": "[concat(parameters('Cosmos Account'), '/fe1558b8-c9d3-4ec5-a955-65802d6831ed')]",
+            "name": "[concat(variables('uniqueCosmosName'), '/fe1558b8-c9d3-4ec5-a955-65802d6831ed')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('uniqueCosmosName'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', variables('uniqueCosmosName'), '00000000-0000-0000-0000-000000000002')]"
             ],
             "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('Cosmos Account'), '00000000-0000-0000-0000-000000000002')]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', variables('uniqueCosmosName'), '00000000-0000-0000-0000-000000000002')]",
                 "principalId": "9a04f3e4-70d0-4dd2-98f7-c625e471ed52",
                 "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('Cosmos Account'))]"
             }
@@ -1451,10 +1797,10 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313')]",
+            "name": "[concat(variables('uniqueWorkspaceconnectionName'), '/aistdevdndcopi2718659313')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('uniqueWorkspaceconnectionName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('uniqueAIservicesName'))]"
             ],
             "properties": {
                 "authType": "ApiKey",
@@ -1467,7 +1813,7 @@
                 "peStatus": "NotApplicable",
                 "metadata": {
                     "ApiType": "Azure",
-                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]",
+                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', variables('uniqueAIservicesName'))]",
                     "ApiVersion": "2023-07-01-preview",
                     "DeploymentApiVersion": "2023-10-01-preview"
                 }
@@ -1476,10 +1822,10 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313_aoai')]",
+            "name": "[concat(variables('uniqueWorkspaceconnectionName'), '/aistdevdndcopi2718659313_aoai')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('uniqueWorkspaceconnectionName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('uniqueAIservicesName'))]"
             ],
             "properties": {
                 "authType": "ApiKey",
@@ -1492,7 +1838,7 @@
                 "peStatus": "NotApplicable",
                 "metadata": {
                     "ApiType": "Azure",
-                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('AI Services'))]",
+                    "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', variables('uniqueAIservicesName'))]",
                     "ApiVersion": "2023-07-01-preview",
                     "DeploymentApiVersion": "2023-10-01-preview"
                 }
@@ -1501,10 +1847,10 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections/deployments",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313_aoai/dall-e-3')]",
+            "name": "[concat(variables('uniqueWorkspaceconnectionName'), '/aistdevdndcopi2718659313_aoai/dall-e-3')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', parameters('Workspace Connections'), 'aistdevdndcopi2718659313_aoai')]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', variables('uniqueWorkspaceconnectionName'), 'aistdevdndcopi2718659313_aoai')]",
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('uniqueWorkspaceconnectionName'))]"
             ],
             "sku": {
                 "name": "Standard",
@@ -1515,10 +1861,10 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/connections/deployments",
             "apiVersion": "2024-07-01-preview",
-            "name": "[concat(parameters('Workspace Connections'), '/aistdevdndcopi2718659313_aoai/gpt-4o-2024-08-06')]",
+            "name": "[concat(variables('uniqueWorkspaceconnectionName'), '/aistdevdndcopi2718659313_aoai/gpt-4o-2024-08-06')]",
             "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', parameters('Workspace Connections'), 'aistdevdndcopi2718659313_aoai')]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('Workspace Connections'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', variables('uniqueWorkspaceconnectionName'), 'aistdevdndcopi2718659313_aoai')]",
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('uniqueWorkspaceconnectionName'))]"
             ],
             "sku": {
                 "name": "GlobalStandard",
@@ -1529,10 +1875,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default/azure-webjobs-hosts')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default/azure-webjobs-hosts')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('uniqueStorageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1546,10 +1892,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default/azure-webjobs-secrets')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default/azure-webjobs-secrets')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('uniqueStorageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1563,10 +1909,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default/github-actions-deploy')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default/github-actions-deploy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('uniqueStorageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1580,10 +1926,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default/images')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default/images')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('uniqueStorageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1597,10 +1943,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default/scm-releases')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default/scm-releases')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage Account'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('uniqueStorageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1614,10 +1960,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default/fapp-dev-dndcopilot9871')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default/fapp-dev-dndcopilot9871')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('Storage Account'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', variables('uniqueStorageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "accessTier": "TransactionOptimized",
@@ -1628,10 +1974,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
             "apiVersion": "2023-05-01",
-            "name": "[concat(parameters('Storage Account'), '/default/fapp-dev-dndcopilota074')]",
+            "name": "[concat(variables('uniqueStorageName'), '/default/fapp-dev-dndcopilota074')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('Storage Account'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', variables('uniqueStorageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]"
             ],
             "properties": {
                 "accessTier": "TransactionOptimized",
@@ -1642,12 +1988,12 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces",
             "apiVersion": "2024-07-01-preview",
-            "name": "[parameters('Workspace Connections')]",
+            "name": "[variables('uniqueWorkspaceconnectionName')]",
             "location": "swedencentral",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]",
-                
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]",
+                "[resourceId('Microsoft.KeyVault/vaults', variables('uniqueKeyvaultName'))]",
+                "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]"
             ],
             "tags": {
                 "Environment": "Development",
@@ -1664,9 +2010,9 @@
             },
             "properties": {
                 "friendlyName": "Ai Studio DnD Copilot",
-                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Account'))]",
-                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('Key Vault Name'))]",
-                
+                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueStorageName'))]",
+                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('uniqueKeyvaultName'))]",
+                "applicationInsights": "[resourceId('microsoft.insights/components', variables('uniqueComponentName'))]",
                 "hbiWorkspace": false,
                 "managedNetwork": {
                     "isolationMode": "Disabled"
